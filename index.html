@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Produtos das Salas (PA e MP)</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome (Ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts (Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estilo base com a fonte Poppins */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8; /* Fundo azul-acinzentado claro */
+        }
+
+        /* Cores customizadas para as Salas */
+        :root {
+            --color-nutra: #10B981; /* green-500 */
+            --color-nutra-light: #D1FAE5; /* green-100 */
+            --color-sorvetes: #EC4899; /* pink-500 */
+            --color-sorvetes-light: #FCE7F3; /* pink-100 */
+            --color-doce: #F59E0B; /* amber-500 */
+            --color-doce-light: #FEF3C7; /* amber-100 */
+            --color-salgado: #EF4444; /* red-500 */
+            --color-salgado-light: #FEE2E2; /* red-100 */
+            --color-lacteos: #3B82F6; /* blue-500 */
+            --color-lacteos-light: #DBEAFE; /* blue-100 */
+            --color-carneos: #F97316; /* orange-500 */
+            --color-carneos-light: #FFF7ED; /* orange-100 */
+        }
+
+        /* Animação para o "Toast" (Notificação) */
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+        }
+        .toast-slide-in {
+            animation: slideInUp 0.3s ease-out forwards;
+        }
+        .toast-fade-out {
+            animation: fadeOut 0.3s ease-in forwards;
+        }
+
+        /* Animação de fade-in para cards */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-fade-in {
+            /* Cada card terá um delay de animação aplicado via JS */
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0; 
+        }
+
+        /* Scrollbar customizada */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a8a8a8;
+            border-radius: 6px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Lógica de classes para o layout */
+        .sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            position: fixed;
+            z-index: 40; 
+        }
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        
+        .main-content {
+            transition: padding-left 0.3s ease-in-out;
+            padding-left: 0;
+            width: 100%;
+        }
+
+        .main-content.sidebar-open {
+            @media (min-width: 768px) {
+                padding-left: 16rem; /* 256px */
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- === Barra Lateral (Abas) === -->
+        <nav id="sidebar" class="sidebar w-64 h-full bg-gray-900 text-white shadow-lg z-40"> 
+            <div class="p-5 border-b border-gray-700">
+                <h2 class="text-xl font-bold text-center">
+                    <i class="fas fa-boxes-stacked mr-2"></i>
+                    Salas (PA e MP)
+                </h2>
+            </div>
+            
+            <ul class="py-4" id="sala-tabs">
+                <!-- As abas das salas serão injetadas aqui pelo JS -->
+            </ul>
+        </nav>
+
+        <!-- === Conteúdo Principal === -->
+        <main id="main-content" class="main-content flex-1 h-full overflow-y-auto bg-gray-100">
+            
+            <!-- Cabeçalho do Conteúdo -->
+            <header class="sticky top-0 bg-white p-4 shadow-md z-20">
+                <div class="flex items-center">
+                    
+                    <button id="menu-toggle-btn" class="text-gray-600 hover:text-gray-900 p-2 rounded-md mr-4">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h1 id="sala-title" class="text-2xl font-bold"></h1>
+                    
+                    <div class="flex items-center space-x-4 ml-auto header-controls">
+                        <div class="relative">
+                            <input id="search-input" type="text" placeholder="Buscar por nome ou código..." class="w-48 md:w-64 pl-10 pr-4 py-2 border rounded-full bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <button id="add-item-btn-main" class="hidden md:flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-700 transition-shadow duration-200 shadow-lg hover:shadow-xl">
+                            <i class="fas fa-plus mr-2"></i>
+                            Adicionar Item
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Tela de Boas-Vindas -->
+            <div id="welcome-screen" class="p-6 md:p-10 text-center">
+                <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+                    <i class="fas fa-boxes-stacked text-5xl text-blue-600 mb-4"></i>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-4">Bem-vindo ao Controle de Produtos!</h1>
+                    <p class="text-lg text-gray-600 leading-relaxed">
+                        Os produtos listados nos segmentos (salas) ao lado representam o estoque atual.
+                    </p>
+                    <p class="text-lg text-gray-600 leading-relaxed mt-2 font-semibold">
+                        Lembre-se: sempre dê baixa e adicione produtos quando eles entrarem ou saírem do estoque para manter o controle atualizado.
+                    </p>
+                    <p class="text-md text-gray-500 mt-6">
+                        Selecione uma sala no menu ao lado ( <i class="fas fa-bars"></i> ) para começar.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Grid de Itens (Cards) -->
+            <div class="p-4 md:p-6">
+                <div id="item-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6">
+                    <!-- Os cards dos produtos serão injetados aqui -->
+                </div>
+                <div id="no-results" class="text-center p-16 text-gray-500 hidden">
+                    <i class="fas fa-box-open text-4xl mb-4"></i>
+                    <p class="text-xl">Nenhum item encontrado.</p>
+                    <p>Tente ajustar sua busca ou adicione um novo item.</p>
+                </div>
+            </div>
+
+            <!-- Botão Flutuante (FAB) para Adicionar - Mobile -->
+            <button id="add-item-fab" class="md:hidden fixed bottom-6 right-6 bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-700 transition-all duration-300 z-20">
+                <i class="fas fa-plus text-2xl"></i>
+            </button>
+        </main>
+    </div>
+
+    <!-- === Modal de Adicionar/Editar Item === -->
+    <div id="item-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 z-40 hidden">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-lg transform transition-all opacity-0 translate-y-4" id="modal-content">
+            <form id="item-form">
+                <!-- Cabeçalho do Modal -->
+                <div class="p-4 flex justify-between items-center border-b">
+                    <h3 id="modal-title" class="text-2xl font-bold">Adicionar Novo Item</h3>
+                    <button type="button" id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Corpo do Modal (Formulário) -->
+                <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                    <div>
+                        <label for="item-sala" class="block text-sm font-medium text-gray-700 mb-1">Sala</label>
+                        <select id="item-sala" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <!-- Opções de sala carregadas via JS -->
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div id="tipo-container">
+                            <!-- O campo de input ou select será injetado aqui pelo JS -->
+                        </div>
+                        <div>
+                            <label for="item-nome" class="block text-sm font-medium text-gray-700 mb-1">Nome do Item</label>
+                            <input type="text" id="item-nome" required placeholder="Descrição do produto" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="item-codigo" class="block text-sm font-medium text-gray-700 mb-1">Código</label>
+                            <input type="text" id="item-codigo" required placeholder="PQ123" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="item-lote" class="block text-sm font-medium text-gray-700 mb-1">Lote</label>
+                            <input type="text" id="item-lote" placeholder="LOTE-A" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <!-- Campos de Quantidade, Unidade e Nível de Alerta -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="item-quantidade-num" class="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
+                            <input type="number" step="0.01" id="item-quantidade-num" required placeholder="100" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="item-unidade" class="block text-sm font-medium text-gray-700 mb-1">Unidade</label>
+                            <input type="text" id="item-unidade" required placeholder="g, kg, un" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="item-limite-baixo" class="block text-sm font-medium text-gray-700 mb-1">Nível de Alerta</label>
+                            <input type="number" step="1" id="item-limite-baixo" required placeholder="200" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="item-obs" class="block text-sm font-medium text-gray-700 mb-1">Observações (Opcional)</label>
+                        <textarea id="item-obs" rows="2" placeholder="Ex: Prateleira A-02. Chegou em 10/10." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <input type="hidden" id="edit-item-id">
+                </div>
+
+                <!-- Rodapé do Modal (Ações) -->
+                <div class="p-4 bg-gray-50 border-t flex justify-end space-x-3">
+                    <button type="button" id="cancel-modal-btn" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="save-modal-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- === Modal de Retirada (Dar Baixa) === -->
+    <div id="retirada-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-md transform transition-all opacity-0 translate-y-4" id="retirada-modal-content">
+            <form id="retirada-form">
+                <!-- Cabeçalho do Modal -->
+                <div class="p-4 flex justify-between items-center border-b">
+                    <h3 id="retirada-modal-title" class="text-2xl font-bold text-blue-600">
+                        <i class="fas fa-minus-circle mr-2"></i>
+                        Dar Baixa / Retirar Item
+                    </h3>
+                    <button type="button" id="close-retirada-modal-btn" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Corpo do Modal -->
+                <div class="p-6 space-y-4">
+                    <p class="text-lg">
+                        Item: <strong id="retirada-item-nome" class="font-bold text-gray-800"></strong>
+                    </p>
+                    <p class="text-lg">
+                        Estoque Atual: <strong id="retirada-item-estoque" class="font-bold text-gray-800"></strong>
+                    </p>
+                    
+                    <hr>
+                    
+                    <div>
+                        <label for="retirada-quantidade" class="block text-lg font-medium text-gray-700 mb-1">Quantidade a Retirar</label>
+                        <input type="number" step="0.01" id="retirada-quantidade" required class="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0.00">
+                    </div>
+                    
+                    <div>
+                        <label for="retirada-obs" class="block text-sm font-medium text-gray-700 mb-1">Motivo / Observação (Opcional)</label>
+                        <input type="text" id="retirada-obs" placeholder="Ex: Retirado por Ana p/ teste" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <input type="hidden" id="retirada-item-id">
+                </div>
+
+                <!-- Rodapé do Modal -->
+                <div class="p-4 bg-gray-50 border-t flex justify-end">
+                    <button type="submit" id="save-retirada-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors w-full md:w-auto text-lg">
+                        Confirmar Retirada
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- === Container de Notificações (Toast) === -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 w-full max-w-xs space-y-3">
+        <!-- Notificações serão injetadas aqui -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- CONFIGURAÇÃO DAS SALAS (ABAS) ---
+            const salasConfig = [
+                { id: 'nutra', nome: 'Nutracêuticos', icone: 'fa-pills', cor: 'var(--color-nutra)', corClara: 'var(--color-nutra-light)' },
+                { id: 'sorvetes', nome: 'Sorvetes', icone: 'fa-ice-cream', cor: 'var(--color-sorvetes)', corClara: 'var(--color-sorvetes-light)' },
+                { id: 'doce', nome: 'Aromas Doce', icone: 'fa-cookie-bite', cor: 'var(--color-doce)', corClara: 'var(--color-doce-light)' },
+                { id: 'salgado', nome: 'Aromas Salgados', icone: 'fa-drumstick-bite', cor: 'var(--color-salgado)', corClara: 'var(--color-salgado-light)' },
+                { id: 'lacteos', nome: 'Lácteos', icone: 'fa-cow', cor: 'var(--color-lacteos)', corClara: 'var(--color-lacteos-light)' },
+                { id: 'carneos', nome: 'Cárneos', icone: 'fa-bacon', cor: 'var(--color-carneos)', corClara: 'var(--color-carneos-light)' }
+            ];
+
+            salasConfig.sort((a, b) => a.nome.localeCompare(b.nome));
+
+            // --- DADOS INICIAIS (Da sua planilha) ---
+            const initialDataRaw = [
+                { id: 1, sala: 'Nutracêuticos', tipo: 'BIOATIVO', nome: 'DHA Algas em pó', codigo: 'PQ993', lote: '', quantidade: '300 g', obs: '' },
+                { id: 2, sala: 'Nutracêuticos', tipo: 'BIOATIVO', nome: 'Glucoronolactona', codigo: 'PQ605', lote: '5226/23', quantidade: '396.67g', obs: '' },
+                { id: 3, sala: 'Nutracêuticos', tipo: 'BIOATIVO', nome: 'D Ribose', codigo: 'PQ1171', lote: '', quantidade: '150g', obs: '' },
+                { id: 4, sala: 'Nutracêuticos', tipo: 'BIOATIVO', nome: 'D Ribose', codigo: 'PQ1362', lote: '1837/24', quantidade: '300,63gr', obs: '' },
+                { id: 5, sala: 'Nutracêuticos', tipo: 'BIOATIVO', nome: 'Extrato de guaraná', codigo: 'PQ1183', lote: '', quantidade: '220 g', obs: '' },
+                { id: 6, sala: 'Nutracêuticos', tipo: 'BIOATIVO', nome: 'Ácido Hialurônico', codigo: 'PQ1321', lote: '6296/24', quantidade: '508,25gr', obs: '' },
+                { id: 7, sala: 'Nutracêuticos', tipo: 'FIBRAS', nome: 'Psyllium P95 (Vitacel)', codigo: 'PQ1255', lote: '6798/24', quantidade: '239,10gr', obs: '' },
+                { id: 8, sala: 'Nutracêuticos', tipo: 'FIBRAS', nome: 'Frutooligossacarídeos (FOS)', codigo: 'PQ1157', lote: '', quantidade: '1kg', obs: '' },
+                { id: 9, sala: 'Nutracêuticos', tipo: 'FIBRAS', nome: 'Polidextrose', codigo: 'PQ1161', lote: '1701/25', quantidade: '1280,78kg', obs: '' },
+                { id: 10, sala: 'Nutracêuticos', tipo: 'AMINOÁCIDOS', nome: 'L- Alanina', codigo: 'PQ1164', lote: '', quantidade: '400g', obs: '' },
+                { id: 11, sala: 'Nutracêuticos', tipo: 'AMINOÁCIDOS', nome: 'L- Carnitina Base', codigo: 'PQ364', lote: '5576/24', quantidade: '2,130kg', obs: '' },
+                { id: 12, sala: 'Nutracêuticos', tipo: 'MINERAIS', nome: 'Bisglicinato de ferro 20% NPA', codigo: 'PQ674', lote: '7107/24', quantidade: '395,95gr', obs: '' },
+                { id: 13, sala: 'Nutracêuticos', tipo: 'MINERAIS', nome: 'Sulfato de zinco monohidratado', codigo: 'PQ885', lote: '1916/25', quantidade: '395,94gr', obs: '' }
+            ];
+
+            // --- ESTADO DA APLICAÇÃO ---
+            let allItems = [];
+            let currentSala = null;
+            let isEditing = false;
+            let editId = null;
+            let isSidebarOpen = true; 
+
+            // --- SELETORES DO DOM ---
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const menuToggleBtn = document.getElementById('menu-toggle-btn');
+            const salaTabsContainer = document.getElementById('sala-tabs');
+            const salaTitle = document.getElementById('sala-title');
+            const itemGrid = document.getElementById('item-grid');
+            const noResults = document.getElementById('no-results');
+            const searchInput = document.getElementById('search-input');
+            const toastContainer = document.getElementById('toast-container');
+
+            // Modal de Adicionar/Editar
+            const modal = document.getElementById('item-modal');
+            const modalContent = document.getElementById('modal-content');
+            const modalTitle = document.getElementById('modal-title');
+            const itemForm = document.getElementById('item-form');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const cancelModalBtn = document.getElementById('cancel-modal-btn');
+            const saveModalBtn = document.getElementById('save-modal-btn');
+            const itemSala = document.getElementById('item-sala');
+            const itemNome = document.getElementById('item-nome');
+            const itemCodigo = document.getElementById('item-codigo');
+            const itemLote = document.getElementById('item-lote');
+            const itemObs = document.getElementById('item-obs');
+            const editItemId = document.getElementById('edit-item-id');
+            const itemQuantidadeNum = document.getElementById('item-quantidade-num');
+            const itemUnidade = document.getElementById('item-unidade');
+            const itemLimiteBaixo = document.getElementById('item-limite-baixo');
+            
+            // Modal de Retirada
+            const retiradaModal = document.getElementById('retirada-modal');
+            const retiradaModalContent = document.getElementById('retirada-modal-content');
+            const retiradaForm = document.getElementById('retirada-form');
+            const closeRetiradaModalBtn = document.getElementById('close-retirada-modal-btn');
+            const retiradaItemNome = document.getElementById('retirada-item-nome');
+            const retiradaItemEstoque = document.getElementById('retirada-item-estoque');
+            const retiradaQuantidade = document.getElementById('retirada-quantidade');
+            const retiradaObs = document.getElementById('retirada-obs');
+            const retiradaItemId = document.getElementById('retirada-item-id');
+
+            
+            // --- FUNÇÕES PRINCIPAIS ---
+
+            // 1. Inicializar App
+            function initApp() {
+                loadFromLocal();
+                renderSidebar();
+                renderMainContent();
+                setupEventListeners();
+                populateSalaDropdown();
+                updateLayout(); 
+            }
+
+            // 2. "Limpar" dados de quantidade antigos e definir Alerta Padrão
+            function parseQuantidade(qStr, oldLimit = null) {
+                // Se oldLimit for um número válido, respeite-o (evita resetar o limite do usuário)
+                if (typeof oldLimit === 'number' && !isNaN(oldLimit)) {
+                     // Apenas parseia a quantidade, mas mantém o limite antigo
+                     const { num, unit } = parseQuantidadeString(qStr);
+                     return { num, unit, limit: oldLimit };
+                }
+
+                // Se não houver limite antigo, calcula um novo
+                const { num, unit } = parseQuantidadeString(qStr);
+                let limit = 10; // Padrão
+                
+                const unitLower = unit.toLowerCase();
+                
+                if (unitLower === 'g' || unitLower === 'gr') {
+                    limit = 200; // Sua regra de 200g
+                } else if (unitLower === 'kg') {
+                    limit = 5; // Regra de 5kg
+                } else if (unitLower === 'un' || unitLower === 'unid' || unitLower === 'unidades') {
+                    limit = 10; // Regra de 10 unidades
+                }
+                
+                return { num, unit, limit };
+            }
+            
+            // Função auxiliar para apenas extrair número e unidade
+            function parseQuantidadeString(qStr) {
+                if (!qStr) return { num: 0, unit: 'un' };
+                // Converte "1.280,78kg" para "1280.78kg"
+                const str = String(qStr).replace(/\./g, '').replace(',', '.');
+                const match = str.match(/^(-?[\d\.]+)\s*(.*)$/); // Encontra número e o resto
+                
+                if (match) {
+                    const num = parseFloat(match[1]) || 0;
+                    let unit = match[2] || 'g'; // Padrão 'g'
+                    if (num > 0 && !match[2]) unit = 'un'; // Se for só número, assume 'un'
+                    
+                    return { num, unit };
+                }
+                if (!isNaN(parseFloat(str))) {
+                    return { num: parseFloat(str), unit: 'un' };
+                }
+                return { num: 0, unit: 'un' }; // Fallback
+            }
+
+            // 3. Layout (Menu Lateral)
+            function updateLayout() {
+                if (isSidebarOpen) {
+                    sidebar.classList.add('open');
+                    mainContent.classList.add('sidebar-open');
+                    menuToggleBtn.innerHTML = '<i class="fas fa-times text-xl"></i>';
+                } else {
+                    sidebar.classList.remove('open');
+                    mainContent.classList.remove('sidebar-open');
+                    menuToggleBtn.innerHTML = '<i class="fas fa-bars text-xl"></i>';
+                }
+            }
+
+            // 4. Renderizar Barra Lateral (Abas)
+            function renderSidebar() {
+                salaTabsContainer.innerHTML = '';
+                salasConfig.forEach(sala => {
+                    const li = document.createElement('li');
+                    const isActive = sala.nome === currentSala;
+                    
+                    li.innerHTML = `
+                        <a href="#" 
+                           class="flex items-center px-6 py-3 text-base font-semibold sala-tab ${isActive ? 'bg-white text-gray-900' : 'text-gray-400 hover:bg-gray-700 transition-colors duration-200'}" 
+                           data-sala="${sala.nome}"
+                           ${isActive ? `style="border-left: 4px solid ${sala.cor};"` : ''}
+                        >
+                            <i class="fas ${sala.icone} w-6 text-center" ${isActive ? `style="color: ${sala.cor};"` : ''}></i>
+                            <span class="ml-4">${sala.nome}</span>
+                        </a>
+                    `;
+                    salaTabsContainer.appendChild(li);
+                });
+            }
+
+            // 5. Renderizar Conteúdo Principal (Boas-vindas ou Cards da Sala)
+            function renderMainContent() {
+                const welcomeScreen = document.getElementById('welcome-screen');
+                const headerControls = document.querySelector('.header-controls');
+
+                if (currentSala === null) {
+                    salaTitle.textContent = 'Boas-Vindas!';
+                    welcomeScreen.classList.remove('hidden');
+                    itemGrid.classList.add('hidden');
+                    noResults.classList.add('hidden');
+                    headerControls.classList.add('hidden');
+                } else {
+                    salaTitle.textContent = currentSala;
+                    welcomeScreen.classList.add('hidden');
+                    itemGrid.classList.remove('hidden');
+                    headerControls.classList.remove('hidden');
+
+                    const searchTerm = searchInput.value.toLowerCase();
+                    const itemsToDisplay = allItems.filter(item => 
+                        item.sala === currentSala &&
+                        (item.nome.toLowerCase().includes(searchTerm) || 
+                         item.codigo.toLowerCase().includes(searchTerm))
+                    );
+
+                    itemsToDisplay.sort((a, b) => a.codigo.localeCompare(b.codigo));
+                    itemGrid.innerHTML = '';
+
+                    if (itemsToDisplay.length === 0) {
+                        noResults.classList.remove('hidden');
+                    } else {
+                        noResults.classList.add('hidden');
+                        itemsToDisplay.forEach((item, index) => {
+                            const card = createItemCard(item);
+                            card.style.animationDelay = `${index * 50}ms`; 
+                            itemGrid.appendChild(card);
+                        });
+                    }
+                }
+            }
+
+            // 6. Criar HTML de um Card
+            function createItemCard(item) {
+                const sala = salasConfig.find(s => s.nome === item.sala);
+                
+                // Configuração de status automática
+                const statusConfig = {
+                    'Em Estoque': { bg: 'bg-green-100', text: 'text-green-800' },
+                    'Baixo Estoque': { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+                    'Esgotado': { bg: 'bg-red-100', text: 'text-red-800' }
+                };
+
+                let statusName, statusStyle;
+                const qtyNum = parseFloat(item.quantidadeNum || 0);
+                const limitNum = parseFloat(item.limiteBaixo || 0);
+
+                if (qtyNum <= 0) {
+                    statusName = 'Esgotado';
+                    statusStyle = statusConfig['Esgotado'];
+                } else if (qtyNum <= limitNum) {
+                    statusName = 'Baixo Estoque';
+                    statusStyle = statusConfig['Baixo Estoque'];
+                } else {
+                    statusName = 'Em Estoque';
+                    statusStyle = statusConfig['Em Estoque'];
+                }
+
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl card-fade-in';
+                
+                card.innerHTML = `
+                    <div class="p-2.5" style="background-color: ${sala.corClara}; border-left: 5px solid ${sala.cor};">
+                        <h3 class="text-base font-bold" style="color: ${sala.cor};">${item.tipo || 'Sem Tipo'}</h3>
+                    </div>
+                    <div class="p-3 space-y-2">
+                        <p class="text-xl font-bold text-gray-800">${item.codigo}</p>
+                        <p class="text-base font-medium text-gray-600 truncate" title="${item.nome}">${item.nome}</p>
+                        
+                        <div class="flex justify-between text-sm text-gray-500 pt-1">
+                            <span class="font-medium">Lote:</span>
+                            <span>${item.lote || '--'}</span>
+                        </div>
+
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span class="font-medium">Qtd:</span>
+                            <span class="font-bold text-gray-700">${item.quantidadeNum} ${item.unidade || ''}</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full ${statusStyle.bg} ${statusStyle.text}">
+                                ${statusName}
+                            </span>
+                            
+                            <div class="flex items-center space-x-2">
+                                ${item.obs ? `<i class="fas fa-info-circle text-blue-500 cursor-help" title="${item.obs.replace(/"/g, '&quot;').replace(/'/g, '&#39;')}"></i>` : ''}
+                                
+                                <button class="text-gray-400 hover:text-green-600 retirada-btn" data-id="${item.id}" title="Dar Baixa / Retirar">
+                                    <i class="fas fa-minus-circle"></i>
+                                </button>
+                                <button class="text-gray-400 hover:text-blue-600 edit-btn" data-id="${item.id}" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-gray-400 hover:text-red-600 delete-btn" data-id="${item.id}" title="Excluir">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return card;
+            }
+
+            // 7. Mostrar/Esconder Modal de Edição
+            function showModal(isEditMode = false, item = null) {
+                isEditing = isEditMode;
+                itemForm.reset();
+
+                if (isEditMode && item) {
+                    editId = item.id;
+                    modalTitle.textContent = 'Editar Item';
+                    saveModalBtn.textContent = 'Salvar Alterações';
+                    itemSala.value = item.sala;
+                    
+                    renderTipoField(item.sala);
+                    setTimeout(() => {
+                        const tipoField = document.getElementById('item-tipo');
+                        if (tipoField) tipoField.value = item.tipo;
+                    }, 0);
+
+                    itemNome.value = item.nome;
+                    itemCodigo.value = item.codigo;
+                    itemLote.value = item.lote;
+                    itemObs.value = item.obs || '';
+                    itemQuantidadeNum.value = item.quantidadeNum || 0;
+                    itemUnidade.value = item.unidade || 'g';
+                    itemLimiteBaixo.value = item.limiteBaixo || 200; // Padrão de 200g
+
+                } else {
+                    editId = null;
+                    modalTitle.textContent = 'Adicionar Novo Item';
+                    saveModalBtn.textContent = 'Salvar';
+                    
+                    const salaParaModal = currentSala || salasConfig[0].nome;
+                    itemSala.value = salaParaModal;
+                    renderTipoField(salaParaModal);
+                    itemObs.value = '';
+                    
+                    // Define valores padrão com base na unidade
+                    const { limit } = parseQuantidade("0 g"); // Pega o limite para 'g'
+                    itemQuantidadeNum.value = 0;
+                    itemUnidade.value = 'g';
+                    itemLimiteBaixo.value = limit; // Usa a regra de 200g
+                }
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modalContent.classList.remove('opacity-0', 'translate-y-4');
+                    modalContent.classList.add('opacity-100', 'translate-y-0');
+                }, 10);
+            }
+
+            function hideModal() {
+                modalContent.classList.add('opacity-0', 'translate-y-4');
+                modalContent.classList.remove('opacity-100', 'translate-y-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+
+            // 8. Mostrar/Esconder Modal de Retirada
+            function showRetiradaModal(item) {
+                retiradaForm.reset();
+                retiradaItemId.value = item.id;
+                retiradaItemNome.textContent = item.nome;
+                retiradaItemEstoque.textContent = `${item.quantidadeNum} ${item.unidade}`;
+                
+                retiradaModal.classList.remove('hidden');
+                setTimeout(() => {
+                    retiradaModalContent.classList.remove('opacity-0', 'translate-y-4');
+                    retiradaModalContent.classList.add('opacity-100', 'translate-y-0');
+                }, 10);
+            }
+
+            function hideRetiradaModal() {
+                retiradaModalContent.classList.add('opacity-0', 'translate-y-4');
+                retiradaModalContent.classList.remove('opacity-100', 'translate-y-0');
+                setTimeout(() => {
+                    retiradaModal.classList.add('hidden');
+                }, 300);
+            }
+
+            // 9. Mostrar Notificação (Toast)
+            function showToast(message, type = 'success') {
+                const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-times-circle' : 'fa-info-circle');
+                const color = type === 'success' ? 'bg-green-500' : (type === 'error' ? 'bg-red-500' : 'bg-blue-500');
+
+                const toast = document.createElement('div');
+                toast.className = `p-4 ${color} text-white rounded-lg shadow-lg flex items-center toast-slide-in`;
+                toast.innerHTML = `
+                    <i class="fas ${icon} mr-3 text-xl"></i>
+                    <p class="font-medium">${message}</p>
+                `;
+                toastContainer.appendChild(toast);
+                setTimeout(() => {
+                    toast.classList.add('toast-fade-out');
+                    toast.addEventListener('animationend', () => toast.remove());
+                }, 3000);
+            }
+
+            // 10. Salvar/Carregar no LocalStorage
+            function saveToLocal() {
+                localStorage.setItem('controleSalasData', JSON.stringify(allItems));
+            }
+
+            function loadFromLocal() {
+                const data = localStorage.getItem('controleSalasData');
+                if (data) {
+                    const parsedData = JSON.parse(data);
+                    // Atualiza os dados antigos (se necessário) com os novos limites
+                    allItems = parsedData.map(item => {
+                        // Se o item não tiver 'limiteBaixo', ele é do formato antigo
+                        if (typeof item.limiteBaixo === 'undefined' || typeof item.quantidadeNum === 'undefined') {
+                            const { num, unit, limit } = parseQuantidade(item.quantidade || item.quantidadeNum);
+                            return {
+                                ...item,
+                                quantidadeNum: num,
+                                unidade: unit,
+                                limiteBaixo: limit
+                            };
+                        }
+                        // Se 'limiteBaixo' for um número, respeite-o
+                        if (typeof item.limiteBaixo === 'number' && !isNaN(item.limiteBaixo)) {
+                            return item;
+                        }
+                        // Se for NaN ou indefinido, recalcule
+                        const { limit } = parseQuantidade(`0 ${item.unidade}`);
+                        return { ...item, limiteBaixo: limit };
+                    });
+                    
+                } else {
+                    // Converte os dados brutos para o novo formato
+                    allItems = initialDataRaw.map(item => {
+                        const { num, unit, limit } = parseQuantidade(item.quantidade);
+                        return {
+                            ...item,
+                            quantidadeNum: num,
+                            unidade: unit,
+                            limiteBaixo: limit
+                        };
+                    });
+                    saveToLocal(); // Salva os dados convertidos
+                }
+            }
+
+            // 11. Popular Dropdowns do Formulário
+            function populateSalaDropdown() {
+                itemSala.innerHTML = '';
+                salasConfig.forEach(sala => {
+                    const option = document.createElement('option');
+                    option.value = sala.nome;
+                    option.textContent = sala.nome;
+                    itemSala.appendChild(option);
+                });
+            }
+
+            // 12. Renderizar Campo "Tipo" Condicional
+            function renderTipoField(salaNome) {
+                const tipoContainer = document.getElementById('tipo-container');
+                let html = '';
+
+                if (salaNome === 'Sorvetes') {
+                    html = `
+                        <label for="item-tipo" class="block text-sm font-medium text-gray-700 mb-1">Tipo (Obrigatório)</label>
+                        <select id="item-tipo" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="" disabled selected>Selecione uma opção</option>
+                            <option value="Recheio">Recheio</option>
+                            <option value="Pó">Pó</option>
+                            <option value="Pasta">Pasta</option>
+                        </select>
+                    `;
+                } else {
+                    html = `
+                        <label for="item-tipo" class="block text-sm font-medium text-gray-700 mb-1">Tipo (Ex: BIOATIVO)</label>
+                        <input type="text" id="item-tipo" placeholder="Tipo do produto (Opcional)" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    `;
+                }
+                tipoContainer.innerHTML = html;
+            }
+
+            // 13. Definir Alerta Padrão baseado na Unidade (no formulário)
+            function setDefaultAlertLimit() {
+                const unit = itemUnidade.value.toLowerCase();
+                const { limit } = parseQuantidade(`0 ${unit}`);
+                itemLimiteBaixo.value = limit;
+            }
+
+            // --- MANIPULADORES DE EVENTOS ---
+            function setupEventListeners() {
+                
+                // Troca de Aba
+                salaTabsContainer.addEventListener('click', e => {
+                    const tab = e.target.closest('.sala-tab');
+                    if (tab) {
+                        e.preventDefault();
+                        currentSala = tab.dataset.sala;
+                        renderSidebar();
+                        renderMainContent();
+                        isSidebarOpen = false;
+                        updateLayout();
+                    }
+                });
+
+                // Busca
+                searchInput.addEventListener('input', renderMainContent);
+
+                // Abrir Modal de Edição
+                document.getElementById('add-item-btn-main').addEventListener('click', () => showModal());
+                document.getElementById('add-item-fab').addEventListener('click', () => showModal());
+
+                // Fechar Modal de Edição
+                closeModalBtn.addEventListener('click', hideModal);
+                cancelModalBtn.addEventListener('click', hideModal);
+                modal.addEventListener('click', e => {
+                    if (e.target === modal) hideModal();
+                });
+
+                // Salvar Formulário (Adicionar/Editar)
+                itemForm.addEventListener('submit', e => {
+                    e.preventDefault();
+                    
+                    const itemData = {
+                        id: isEditing ? editId : Date.now(),
+                        sala: itemSala.value,
+                        tipo: document.getElementById('item-tipo').value,
+                        nome: itemNome.value,
+                        codigo: itemCodigo.value,
+                        lote: itemLote.value,
+                        obs: itemObs.value || '',
+                        quantidadeNum: parseFloat(itemQuantidadeNum.value) || 0,
+                        unidade: itemUnidade.value || 'un',
+                        limiteBaixo: parseFloat(itemLimiteBaixo.value) || 0
+                    };
+
+                    if (isEditing) {
+                        const index = allItems.findIndex(item => item.id === editId);
+                        if (index !== -1) {
+                            allItems[index] = itemData;
+                        }
+                        showToast('Item atualizado com sucesso!', 'success');
+                    } else {
+                        allItems.push(itemData);
+                        showToast('Item adicionado com sucesso!', 'success');
+                    }
+
+                    saveToLocal();
+                    renderMainContent();
+                    hideModal();
+                });
+
+                // Ações do Card (Retirar/Editar/Excluir)
+                itemGrid.addEventListener('click', e => {
+                    const btn = e.target.closest('button');
+                    if (!btn) return;
+
+                    const id = parseInt(btn.dataset.id);
+                    const item = allItems.find(i => i.id === id);
+
+                    // Ação do botão de retirada
+                    if (btn.classList.contains('retirada-btn')) {
+                        showRetiradaModal(item);
+                    }
+
+                    if (btn.classList.contains('edit-btn')) {
+                        showModal(true, item);
+                    }
+
+                    if (btn.classList.contains('delete-btn')) {
+                        if (confirm(`Tem certeza que deseja excluir o item "${item.nome}"?`)) {
+                            allItems = allItems.filter(i => i.id !== id);
+                            saveToLocal();
+                            renderMainContent();
+                            showToast('Item excluído.', 'error');
+                        }
+                    }
+                });
+
+                // Eventos do Modal de Retirada
+                closeRetiradaModalBtn.addEventListener('click', hideRetiradaModal);
+                retiradaModal.addEventListener('click', e => {
+                    if (e.target === retiradaModal) hideRetiradaModal();
+                });
+
+                retiradaForm.addEventListener('submit', e => {
+                    e.preventDefault();
+                    
+                    const id = parseInt(retiradaItemId.value);
+                    const qtdRetirada = parseFloat(retiradaQuantidade.value);
+                    const index = allItems.findIndex(item => item.id === id);
+
+                    if (index === -1 || !qtdRetirada || qtdRetirada <= 0) {
+                        showToast('Valor de retirada inválido.', 'error');
+                        return;
+                    }
+
+                    const item = allItems[index];
+                    const novaQtd = item.quantidadeNum - qtdRetirada;
+
+                    // Atualiza o item
+                    item.quantidadeNum = novaQtd;
+                    
+                    // Adiciona observação
+                    const dataHoje = new Date().toLocaleDateString('pt-BR');
+                    const obsRetirada = `Retirada de ${qtdRetirada} ${item.unidade} em ${dataHoje}.`;
+                    const motivo = retiradaObs.value ? ` Motivo: ${retiradaObs.value}` : '';
+                    
+                    // Adiciona a nova obs no INÍCIO da lista de observações
+                    item.obs = `${obsRetirada}${motivo}\n${item.obs || ''}`.trim();
+
+                    saveToLocal();
+                    renderMainContent();
+                    hideRetiradaModal();
+                    showToast('Retirada registrada com sucesso!', 'success');
+                });
+
+
+                // Listener para mudar o campo "Tipo" dinamicamente
+                itemSala.addEventListener('change', (e) => {
+                    renderTipoField(e.target.value);
+                });
+
+                // Listener para definir o Nível de Alerta Padrão
+                itemUnidade.addEventListener('change', setDefaultAlertLimit);
+
+                // Menu Mobile
+                menuToggleBtn.addEventListener('click', () => {
+                    isSidebarOpen = !isSidebarOpen;
+                    updateLayout();
+                });
+
+                mainContent.addEventListener('click', () => {
+                     if (window.innerWidth < 768 && isSidebarOpen) {
+                        isSidebarOpen = false;
+                        updateLayout();
+                     }
+                });
+            }
+
+            // --- INICIAR ---
+            initApp();
+        });
+    </script>
+</body>
+</html>
