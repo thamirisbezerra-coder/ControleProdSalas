@@ -28,7 +28,7 @@
             addDoc, updateDoc, deleteDoc, setDoc, query, where, writeBatch 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { 
-            getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken 
+            getAuth, signInAnonymously, onAuthStateChanged 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // Configuração do Firebase do usuário
@@ -63,8 +63,7 @@
             where,
             writeBatch,
             signInAnonymously,
-            onAuthStateChanged,
-            signInWithCustomToken
+            onAuthStateChanged
         };
     </script>
 
@@ -391,7 +390,7 @@
         const {
             db, auth, collection, doc, getDocs, onSnapshot,
             addDoc, updateDoc, deleteDoc, setDoc, query, where, writeBatch,
-            signInAnonymously, onAuthStateChanged, signInWithCustomToken
+            signInAnonymously, onAuthStateChanged
         } = window.firebase;
 
         // IDs da Aplicação e Usuário
@@ -414,6 +413,7 @@
         
         // Dados iniciais (só serão usados se o banco estiver vazio)
         const dadosIniciaisNutraceuticos = [
+            // (Lista completa de nutracêuticos...)
             { tipo: "BIOATIVO", codigo: "PQ993", descricao: "DHA Algas em pó", lote: "", quantidade: 300, unidade: "g" },
             { tipo: "BIOATIVO", codigo: "PQ605", descricao: "Glucoronolactona", lote: "5226/23", quantidade: 396.67, unidade: "g" },
             { tipo: "BIOATIVO", codigo: "PQ1171", descricao: "D Ribose", lote: "", quantidade: 150, unidade: "g" },
@@ -428,7 +428,7 @@
             { tipo: "AMINOÁCIDOS", codigo: "PQ1164", descricao: "L- Alanina", lote: "", quantidade: 400, unidade: "g" },
             { tipo: "AMINOÁCIDOS", codigo: "PQ364", descricao: "L- Carnitina Base", lote: "5576/24", quantidade: 2.130, unidade: "kg" },
             { tipo: "MINERAIS", codigo: "PQ1007", descricao: "Bisglicinato de ferro 20% NPA", lote: "7107/24", quantidade: 395.95, unidade: "g" },
-            { tipo: "MINERAIS", codigo: "PQ885", descricao: "Sulfato de zinco monohidratado", lote: "1916/25", quantidade: 395.94, unidade: "g", status: "Em Estoque" },
+            { tipo: "MINERAIS", codigo: "PQ885", descricao: "Sulfato de zinco monohidratado", lote: "1916/25", quantidade: 395.94, unidade: "g" },
             { tipo: "MINERAIS", codigo: "PQ1095", descricao: "Fumarato ferroso", lote: "7144/24", quantidade: 449.40, unidade: "g" },
             { tipo: "MINERAIS", codigo: "PQ626", descricao: "Sulfato de magnésio monohidratado", lote: "0544/25", quantidade: 402.98, unidade: "g" },
             { tipo: "MINERAIS", codigo: "PQ675", descricao: "Bisglicinato de zinco 20%", lote: "1430/25", quantidade: 399.93, unidade: "g" },
@@ -438,6 +438,31 @@
             { tipo: "MINERAIS", codigo: "PQ676", descricao: "Bisglicinato de magnésio 30% - ORGOLABS", lote: "4623/24", quantidade: 605.60, unidade: "g" },
             { tipo: "MINERAIS", codigo: "MD1020", descricao: "Sulfato de cobre", lote: "03010379/0725", quantidade: 400.40, unidade: "g" },
             { tipo: "MINERAIS", codigo: "PQ704", descricao: "Bisglicinato de cobre", lote: "2527/25", quantidade: 400, unidade: "g" }
+        ];
+
+        // DADOS DE SORVETE ATUALIZADOS
+        const dadosIniciaisSorvetes = [
+            { codigo: '5310', descricao: 'DORELLA 21% PROTEIN S ADD ACUCAR (1X20KG)', lote: 'AMOSTRA', quantidade: 3.602, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '5260', descricao: 'RECHEIO ORO NEGRO (6X4KG)', lote: '03030021/0325', quantidade: 2.4, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '4883', descricao: 'DORELLA BRANCA (6X4KG)', lote: '03031367/0925', quantidade: 1.383, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '4866', descricao: 'CREME DE COCO BRANCO (6X4KG)', lote: '03030296/1025', quantidade: 2.43, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '4857', descricao: 'DORELLA (6X4KG)', lote: '03030839/1025', quantidade: 3.82, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '4863', descricao: 'CHOCOWAFER (6X4KG)', lote: '03030366/0325', quantidade: 2.36, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '4951', descricao: 'DORELLA SEM ADICAO DE ACUCAR (1X20KG)', lote: '03030650/0925', quantidade: 4, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '4952', descricao: 'LEITINHO SEM ADICAO DE ACUCAR (1X20KG)', lote: '03030737/0325', quantidade: 1.55, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '4891', descricao: 'RECHEIO BABA VERDE (6X4KG)', lote: '03031644/0925', quantidade: 3.041, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '5001', descricao: 'RECHEIO TRUFADO BRANCO (1X20KG)', lote: '03030462/1125', quantidade: 3.1, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '5275', descricao: 'RECHEIO DE AVELA ESSENCIAL (1X20KG)', lote: '03030375/0825', quantidade: 2, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: 'DSO845.01', descricao: 'RECHEIO PISTACHE SEM ADD ACUCAR (1X20KG)', lote: '', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '5278', descricao: 'RECHEIO PISTACHE (6X4KG)', lote: '03031400/0425', quantidade: 0.6, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '2740', descricao: 'RECHEIO DE MORANGO ESSENCIAL (1X20KG)', lote: '03030477/0325', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '4900', descricao: 'PACOCA ESSENCIAL (6X4KG)', lote: '03031044/0225', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '4860', descricao: 'CHOCOLATE CREAM (6X4KG)', lote: '03031982/0125', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '4892', descricao: 'TRUFA ESSENCIAL (6X4KG)', lote: '0303117/0225', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '5618', descricao: 'CHOCOSKIMO AO LEITE ESSENCIAL (6X4KG)', lote: '03031448/0725', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: '5617', descricao: 'CHOCOSKIMO BRANCO ESSENCIAL (6X4KG)', lote: '03031768/0325', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: 'DSO1049', descricao: 'CHOCOSKIMO ESSENCIAL SPECULOOS (1X12 KG)', lote: 'AMOSTRA', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
+            { codigo: 'DSO848', descricao: 'RECHEIO FORNEAVEL FRUTAS VERMELHAS (1X12KG)', lote: 'AMOSTRA', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' }
         ];
 
 
@@ -498,9 +523,10 @@
             addEventListeners();
             
             try {
-                // FORÇA O LOGIN ANÔNIMO para usar o projeto Firebase do usuário.
-                // Ignora o token do ambiente (__initial_auth_token) que causa o erro "auth/custom-token-mismatch".
+                // Força o login anônimo
                 console.log("Forçando autenticação anônima...");
+                // Correção do erro custom-token-mismatch:
+                // Ignoramos o __initial_auth_token e sempre usamos o anônimo
                 await signInAnonymously(auth);
                 
             } catch (error) {
@@ -514,11 +540,10 @@
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     console.log("Usuário autenticado:", user.uid);
-                    userId = user.uid;
+                    userId = user.uid; // Embora seja anônimo, ainda temos um UID
                     
                     // ATUALIZAÇÃO PARA CAMINHO PÚBLICO
-                    // Todos os usuários (autenticados anonimamente) lerão/escreverão
-                    // no mesmo local "público".
+                    // Todos os usuários (mesmo anônimos) acessarão este mesmo caminho
                     const collectionPath = `artifacts/${appId}/public/data/salas-produtos`;
                     produtosCollectionRef = collection(db, collectionPath);
                     console.log("Usando caminho público do Firestore:", collectionPath);
@@ -542,18 +567,33 @@
             unsubscribe = onSnapshot(produtosCollectionRef, async (snapshot) => {
                 console.log("Dados recebidos do Firestore. Documentos:", snapshot.size);
                 
-                // Primeira vez? Verifica se precisa popular os dados iniciais
+                // Processa os dados *primeiro* para verificar o conteúdo
+                todosOsProdutos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // --- INÍCIO DA NOVA LÓGICA DE VERIFICAÇÃO ---
+                
                 if (snapshot.empty) {
-                    console.log("Banco de dados vazio. Populando com dados iniciais...");
+                    // 1. Banco de dados 100% vazio. Roda a função principal de popular.
+                    console.log("Banco de dados vazio. Populando com dados iniciais (Nutra + Sorvetes)...");
                     await popularDadosIniciais();
-                    // O listener vai pegar os novos dados, não precisa fazer mais nada
-                    return; 
+                    return; // O listener vai rodar de novo com os dados novos.
+                }
+
+                // 2. Banco de dados NÃO está vazio. Checa se Sorvetes existe.
+                const temSorvetes = todosOsProdutos.some(p => p.sala === 'sorvetes');
+                
+                if (!temSorvetes) {
+                    // O DB tem dados (provavelmente Nutra), mas não Sorvetes.
+                    console.log("Detectamos dados existentes, mas 'Sorvetes' está faltando. Adicionando Sorvetes...");
+                    await adicionarApenasSorvetes(); // Adiciona SÓ os sorvetes
+                    return; // O listener vai rodar de novo com os dados novos.
                 }
                 
-                // Processa os dados recebidos
-                todosOsProdutos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                // Renderiza a sala ativa (ou boas-vindas)
+                // --- FIM DA NOVA LÓGICA DE VERIFICAÇÃO ---
+
+                // 3. Se chegou aqui, o DB não está vazio E já tem sorvetes.
+                // Então, apenas renderiza.
+                console.log("Banco de dados carregado. Renderizando...");
                 if (salaAtiva === 'boas-vindas') {
                     mostrarTelaBoasVindas();
                 } else {
@@ -569,30 +609,71 @@
             });
         }
         
-        // Popula o Firestore com dados iniciais se estiver vazio
-        async function popularDadosIniciais() {
-            console.log("Iniciando a escrita dos dados iniciais...");
+        // NOVA FUNÇÃO: Adiciona apenas os dados de sorvete
+        async function adicionarApenasSorvetes() {
+            console.log("Iniciando a adição SOMENTE dos dados de Sorvetes...");
             const batch = writeBatch(db);
             
-            dadosIniciaisNutraceuticos.forEach(item => {
+            // Adiciona produtos de Sorvetes
+            dadosIniciaisSorvetes.forEach(item => {
                 const docRef = doc(produtosCollectionRef); // Cria nova referência de doc
-                
                 const nivelAlerta = calcularNivelAlertaPadrao(item.quantidade, item.unidade);
                 
                 batch.set(docRef, {
                     ...item,
-                    sala: 'nutraceuticos', // Define a sala para os dados iniciais
+                    sala: 'sorvetes', // Define a sala
                     observacoes: "", // Campo de observações
                     alerta: nivelAlerta, // Nível de alerta automático
-                    // Status não é mais salvo, é calculado
                 });
             });
             
             try {
                 await batch.commit();
-                console.log("Dados iniciais populados com sucesso!");
+                console.log("Dados de Sorvetes adicionados com sucesso!");
                 // O listener onSnapshot vai detectar essa mudança e recarregar
             } catch (error) {
+                console.error("Erro ao adicionar dados de Sorvetes:", error);
+                showToast("Erro ao salvar dados de Sorvetes.", 'bg-red-600');
+            }
+        }
+        
+        // Popula o Firestore com dados iniciais (Nutra + Sorvetes) se estiver 100% vazio
+        async function popularDadosIniciais() {
+            console.log("Iniciando a escrita dos dados iniciais (completos)...");
+            const batch = writeBatch(db);
+            
+            // Adiciona produtos de Nutracêuticos
+            dadosIniciaisNutraceuticos.forEach(item => {
+                const docRef = doc(produtosCollectionRef); 
+                const nivelAlerta = calcularNivelAlertaPadrao(item.quantidade, item.unidade);
+                
+                batch.set(docRef, {
+                    ...item,
+                    sala: 'nutraceuticos', // Define a sala
+                    observacoes: "", 
+                    alerta: nivelAlerta, 
+                });
+            });
+            
+            // Adiciona produtos de Sorvetes (igual à nova função)
+            dadosIniciaisSorvetes.forEach(item => {
+                const docRef = doc(produtosCollectionRef); 
+                const nivelAlerta = calcularNivelAlertaPadrao(item.quantidade, item.unidade);
+                
+                batch.set(docRef, {
+                    ...item,
+                    sala: 'sorvetes', // Define a sala
+                    observacoes: "", 
+                    alerta: nivelAlerta, 
+                });
+            });
+            
+            try {
+                await batch.commit();
+                console.log("Dados iniciais (Nutra + Sorvetes) populados com sucesso!");
+                // O listener onSnapshot vai detectar essa mudança e recarregar
+            } catch (error)
+                {
                 console.error("Erro ao popular dados iniciais:", error);
                 showToast("Erro ao salvar dados iniciais.", 'bg-red-600');
             }
@@ -608,8 +689,8 @@
             const linkBoasVindas = criarLinkSidebar('boas-vindas', 'Boas-Vindas', 'fa-home', 'text-blue-400');
             sidebarNav.appendChild(linkBoasVindas);
             
-            // Links das Salas
-            salas.forEach(sala => {
+            // Links das Salas (em ordem alfabética)
+            salas.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(sala => {
                 const link = criarLinkSidebar(sala.id, sala.nome, sala.icon, sala.color);
                 sidebarNav.appendChild(link);
             });
@@ -635,7 +716,7 @@
         // Preenche o <select> de salas no modal
         function preencherSelectSalas() {
             itemSalaSelect.innerHTML = '<option value="" disabled selected>Selecione uma sala</option>';
-            salas.forEach(sala => {
+            salas.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(sala => {
                 const option = document.createElement('option');
                 option.value = sala.id;
                 option.textContent = sala.nome;
@@ -875,7 +956,7 @@
                     option.value = opt.value;
                     option.textContent = opt.text;
                     if (opt.disabled) option.disabled = true;
-                    if (opt.value === valorAtual) {
+                    if (opt.value.toLowerCase() === valorAtual.toLowerCase()) { // Comparação sem case
                         option.selected = true;
                     } else if (!valorAtual && opt.disabled) {
                          option.selected = true; // Seleciona "Selecione um tipo" se não houver valor
@@ -1154,3 +1235,4 @@
     </script>
 </body>
 </html>
+
