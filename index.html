@@ -18,9 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Firebase -->
-    <!-- ATENÇÃO: Configuração do Firebase já preenchida -->
     <script type="module">
-        // Importa as funções necessárias dos SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
         import { 
@@ -42,11 +40,9 @@
             measurementId: "G-C4FMGD6V60"
         };
 
-        // Inicializa o Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         
-        // Disponibiliza as funções do Firebase globalmente para o script inline
         window.firebase = {
             app,
             db: getFirestore(app),
@@ -68,168 +64,79 @@
     </script>
 
     <style>
-        /* Estilo da fonte */
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Animação suave para a sidebar */
-        #sidebar {
-            transition: transform 0.3s ease-in-out;
-        }
-
-        #main-content {
-            transition: margin-left 0.3s ease-in-out;
-        }
-
-        /* Estilo para o 'backdrop' do modal */
+        body { font-family: 'Inter', sans-serif; }
+        #sidebar { transition: transform 0.3s ease-in-out; }
+        #main-content { transition: margin-left 0.3s ease-in-out; }
         .modal-backdrop {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 40;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); z-index: 40; opacity: 0; transition: opacity 0.3s ease;
         }
-
-        /* Estilo para o modal */
         .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 50;
-            opacity: 0;
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 50; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease;
         }
-
-        /* Toast (Notificação) */
         #toast {
-            position: fixed;
-            bottom: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 1rem 1.5rem;
-            border-radius: 0.5rem;
-            color: white;
-            font-weight: 600;
-            z-index: 100;
-            transition: bottom 0.5s ease-in-out;
+            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+            padding: 1rem 1.5rem; border-radius: 0.5rem; color: white; font-weight: 600;
+            z-index: 100; transition: bottom 0.5s ease-in-out;
         }
-
-        #toast.show {
-            bottom: 2rem;
-        }
-
-        /* Tooltip (dica) para Observações */
-        [data-tooltip] {
-            position: relative;
-            cursor: pointer;
-        }
+        #toast.show { bottom: 2rem; }
+        [data-tooltip] { position: relative; cursor: pointer; }
         [data-tooltip]:before {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%) translateY(-8px);
-            background-color: #333;
-            color: #fff;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            white-space: pre-wrap; /* Permite quebra de linha */
-            width: max-content;
-            max-width: 300px; /* Largura máxima */
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s, visibility 0.2s;
-            z-index: 10;
+            content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%;
+            transform: translateX(-50%) translateY(-8px); background-color: #333; color: #fff;
+            padding: 6px 10px; border-radius: 6px; font-size: 0.875rem; white-space: pre-wrap;
+            width: max-content; max-width: 300px; opacity: 0; visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s; z-index: 10;
         }
-        [data-tooltip]:hover:before {
-            opacity: 1;
-            visibility: visible;
-        }
+        [data-tooltip]:hover:before { opacity: 1; visibility: visible; }
     </style>
 </head>
 
 <body class="h-full overflow-hidden">
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div id="sidebar"
-            class="w-64 bg-gray-900 text-white flex flex-col fixed inset-y-0 left-0 z-30 transform -translate-x-full md:translate-x-0">
-            <!-- Logo / Título -->
+        <div id="sidebar" class="w-64 bg-gray-900 text-white flex flex-col fixed inset-y-0 left-0 z-30 transform -translate-x-full md:translate-x-0">
             <div class="flex items-center justify-center h-20 border-b border-gray-700 px-4">
                 <i class="fas fa-boxes-stacked fa-2x text-blue-400"></i>
                 <h1 class="text-xl font-bold ml-3">Controle de Salas</h1>
             </div>
-
-            <!-- Navegação -->
             <nav id="sidebar-nav" class="flex-1 overflow-y-auto mt-4 space-y-2 px-2"></nav>
-
-            <!-- Botão de Adicionar Item -->
             <div class="p-4 border-t border-gray-700">
-                <button id="add-item-btn"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center transition-colors">
-                    <i class="fas fa-plus mr-2"></i>
-                    Adicionar Item
+                <button id="add-item-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center transition-colors">
+                    <i class="fas fa-plus mr-2"></i> Adicionar Item
                 </button>
             </div>
         </div>
 
         <!-- Conteúdo Principal -->
         <div id="main-content" class="flex-1 flex flex-col overflow-hidden md:ml-64">
-            <!-- Header -->
             <header class="bg-white shadow-md h-20 flex items-center justify-between px-6 z-20">
-                <!-- Botão de Menu (Mobile) e Título da Sala -->
                 <div class="flex items-center">
                     <button id="menu-toggle-btn" class="text-gray-600 md:hidden mr-4">
                         <i class="fas fa-bars fa-lg"></i>
                     </button>
                     <h2 id="sala-title" class="text-2xl font-bold text-gray-800">Boas-Vindas</h2>
                 </div>
-
-                <!-- Busca -->
                 <div class="relative w-full max-w-md">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                        <i class="fas fa-search"></i>
-                    </span>
-                    <input type="text" id="search-bar" placeholder="Buscar por código ou descrição..."
-                        class="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><i class="fas fa-search"></i></span>
+                    <input type="text" id="search-bar" placeholder="Buscar por código ou descrição..." class="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
             </header>
 
-            <!-- Área de Conteúdo (Cards) -->
             <main id="content-area" class="flex-1 overflow-y-auto p-6 bg-gray-100">
-                <!-- Tela de Boas-Vindas -->
                 <div id="welcome-screen" class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
                     <h2 class="text-3xl font-bold text-gray-800 mb-4">Bem-vindo(a) ao Controle de Produtos!</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        Este é o seu painel central para gerenciar o estoque (PA e MP) de todas as salas.
-                    </p>
+                    <p class="text-lg text-gray-600 mb-6">Este é o seu painel central para gerenciar o estoque (PA e MP) de todas as salas.</p>
                     <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-md">
                         <h3 class="font-bold text-blue-800 text-lg mb-2">Instruções Importantes</h3>
-                        <p class="text-blue-700">
-                            Os produtos que você vê em cada segmento refletem o que está
-                            <strong class="font-semibold">atualmente na sala</strong>.
-                        </p>
                         <ul class="list-disc list-inside mt-2 text-blue-700 space-y-1">
-                            <li><strong class="font-semibold">Sempre dê baixa</strong> usando o botão de retirada ( <i class="fas fa-minus-circle opacity-70"></i> ) quando um produto sair.</li>
+                            <li><strong class="font-semibold">Sempre dê baixa</strong> usando o botão de retirada quando um produto sair.</li>
                             <li><strong class="font-semibold">Sempre adicione</strong> um novo item ou edite a quantidade quando um produto entrar.</li>
                         </ul>
                     </div>
                 </div>
-                
-                <!-- Container dos Cards -->
-                <div id="product-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-                    <!-- Cards de produtos serão inseridos aqui pelo JS -->
-                </div>
-                
-                <!-- Mensagem de "Nenhum item" -->
+                <div id="product-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6"></div>
                 <div id="no-items-message" class="hidden text-center mt-20">
                      <i class="fas fa-box-open fa-4x text-gray-400 mb-4"></i>
                      <h3 class="text-2xl font-semibold text-gray-600">Nenhum item encontrado</h3>
@@ -239,169 +146,97 @@
         </div>
     </div>
 
-    <!-- Modal de Adicionar/Editar Item -->
+    <!-- Modais e Toasts -->
     <div id="item-modal-backdrop" class="modal-backdrop"></div>
     <div id="item-modal" class="modal bg-white w-full max-w-lg rounded-xl shadow-2xl">
         <form id="item-form" class="flex flex-col">
-            <!-- Cabeçalho do Modal -->
             <div class="flex justify-between items-center p-6 border-b">
                 <h3 id="modal-title" class="text-2xl font-bold text-gray-800">Adicionar Novo Item</h3>
-                <button type="button" class="modal-close-btn text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times fa-lg"></i>
-                </button>
+                <button type="button" class="modal-close-btn text-gray-400 hover:text-gray-600"><i class="fas fa-times fa-lg"></i></button>
             </div>
-
-            <!-- Conteúdo do Formulário -->
             <div class="p-6 space-y-4 overflow-y-auto max-h-[60vh]">
-                <!-- Campo Escondido para ID -->
                 <input type="hidden" id="item-id">
-                
-                <!-- Sala -->
                 <div>
                     <label for="item-sala" class="block text-sm font-medium text-gray-700 mb-1">Sala</label>
-                    <select id="item-sala" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <!-- Opções de sala serão preenchidas pelo JS -->
-                    </select>
+                    <select id="item-sala" required class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"></select>
                 </div>
-                
-                <!-- Código -->
                 <div>
                     <label for="item-codigo" class="block text-sm font-medium text-gray-700 mb-1">Código</label>
-                    <input type="text" id="item-codigo" required placeholder="Ex: PQ1234"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="item-codigo" required placeholder="Ex: PQ1234" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-
-                <!-- Descrição -->
                 <div>
                     <label for="item-descricao" class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
-                    <input type="text" id="item-descricao" required placeholder="Ex: Cafeína Anidra"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="item-descricao" required placeholder="Ex: Cafeína Anidra" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-
-                <!-- Lote -->
                 <div>
                     <label for="item-lote" class="block text-sm font-medium text-gray-700 mb-1">Lote</label>
-                    <input type="text" id="item-lote" placeholder="Ex: 1214/25"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="item-lote" placeholder="Ex: 1214/25" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-
-                <!-- Campos de Quantidade (Número) -->
                 <div class="grid grid-cols-3 gap-4">
                     <div>
                         <label for="item-quantidade" class="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
-                        <input type="number" step="any" id="item-quantidade" required placeholder="Ex: 300"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" step="any" id="item-quantidade" required placeholder="Ex: 300" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label for="item-unidade" class="block text-sm font-medium text-gray-700 mb-1">Unidade</label>
-                        <input type="text" id="item-unidade" required placeholder="Ex: g, kg, un"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="item-unidade" required placeholder="Ex: g, kg" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label for="item-alerta" class="block text-sm font-medium text-gray-700 mb-1">Nível de Alerta</label>
-                        <input type="number" id="item-alerta" required placeholder="Ex: 50"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" id="item-alerta" required placeholder="Ex: 50" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
-
-                <!-- Tipo (Dinâmico) -->
-                <div id="tipo-container">
-                    <!-- O campo de texto ou select será inserido aqui -->
-                </div>
-
-                <!-- Observações -->
+                <div id="tipo-container"></div>
                 <div>
                     <label for="item-observacoes" class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
-                    <textarea id="item-observacoes" rows="3" placeholder="Adicione uma nota (ex: data de validade, fornecedor...)"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                    <textarea id="item-observacoes" rows="3" placeholder="Adicione uma nota..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
                 </div>
             </div>
-
-            <!-- Rodapé do Modal -->
             <div class="flex justify-end items-center p-6 border-t bg-gray-50 rounded-b-xl space-x-4">
                 <button type="button" class="modal-close-btn font-medium text-gray-600 hover:text-gray-800">Cancelar</button>
-                <button type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">Salvar</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">Salvar</button>
             </div>
         </form>
     </div>
 
-    <!-- Modal de Retirada (Dar Baixa) -->
     <div id="retirada-modal-backdrop" class="modal-backdrop"></div>
     <div id="retirada-modal" class="modal bg-white w-full max-w-md rounded-xl shadow-2xl">
         <form id="retirada-form" class="flex flex-col">
-            <!-- Cabeçalho do Modal -->
             <div class="flex justify-between items-center p-6 border-b">
                 <h3 id="retirada-modal-title" class="text-2xl font-bold text-gray-800">Dar Baixa no Estoque</h3>
-                <button type="button" class="modal-close-btn text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times fa-lg"></i>
-                </button>
+                <button type="button" class="modal-close-btn text-gray-400 hover:text-gray-600"><i class="fas fa-times fa-lg"></i></button>
             </div>
-
-            <!-- Conteúdo do Formulário -->
             <div class="p-6 space-y-4">
                 <input type="hidden" id="retirada-item-id">
-                
-                <p class="text-center text-lg">
-                    Item: <strong id="retirada-item-nome" class="text-gray-800"></strong>
-                </p>
-                
+                <p class="text-center text-lg">Item: <strong id="retirada-item-nome" class="text-gray-800"></strong></p>
                 <div class="text-center p-4 bg-gray-100 rounded-lg">
                     <div class="text-sm text-gray-500">Estoque Atual</div>
                     <div id="retirada-estoque-atual" class="text-3xl font-bold text-gray-900">--</div>
                 </div>
-
                 <div>
                     <label for="retirada-quantidade" class="block text-sm font-medium text-gray-700 mb-1">Quantidade a Retirar</label>
-                    <input type="number" step="any" id="retirada-quantidade" required placeholder="Ex: 100"
-                        class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" step="any" id="retirada-quantidade" required placeholder="Ex: 100" class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                
                 <div>
                     <label for="retirada-motivo" class="block text-sm font-medium text-gray-700 mb-1">Motivo (Opcional)</label>
-                    <input type="text" id="retirada-motivo" placeholder="Ex: Retirado por João (Lab)"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="retirada-motivo" placeholder="Ex: Retirado por..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-
             </div>
-
-            <!-- Rodapé do Modal -->
             <div class="flex justify-end items-center p-6 border-t bg-gray-50 rounded-b-xl space-x-4">
                 <button type="button" class="modal-close-btn font-medium text-gray-600 hover:text-gray-800">Cancelar</button>
-                <button type="submit"
-                    class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">Confirmar Retirada</button>
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">Confirmar Retirada</button>
             </div>
         </form>
     </div>
 
-    <!-- Toast (Notificação) -->
-    <div id="toast">Mensagem da notificação</div>
-    
-    <!-- Tela de Carregamento (Spinner) -->
-    <div id="loading-spinner" class="fixed inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-[999]">
-        <i class="fas fa-spinner fa-spin fa-3x text-blue-600"></i>
-    </div>
+    <div id="toast">Mensagem</div>
+    <div id="loading-spinner" class="fixed inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-[999]"><i class="fas fa-spinner fa-spin fa-3x text-blue-600"></i></div>
 
-
-    <!-- JavaScript Principal -->
     <script type="module">
-        // Atalhos para as funções do Firebase
-        const {
-            db, auth, collection, doc, getDocs, onSnapshot,
-            addDoc, updateDoc, deleteDoc, setDoc, query, where, writeBatch,
-            signInAnonymously, onAuthStateChanged
-        } = window.firebase;
-
-        // IDs da Aplicação e Usuário
-        // Usamos um ID de app fixo para que os dados sejam "públicos"
+        const { db, auth, collection, doc, getDocs, onSnapshot, addDoc, updateDoc, deleteDoc, setDoc, query, where, writeBatch, signInAnonymously, onAuthStateChanged } = window.firebase;
         const appId = 'controle-produtos-salas-v1';
-        let userId = null; // Será definido pelo Firebase Auth
-        
-        // Caminho da coleção pública no Firestore
-        let produtosCollectionRef;
+        let userId = null, produtosCollectionRef;
 
-        // Estado da Aplicação
         const salas = [
             { id: 'aromas-doces', nome: 'Aromas Doces', icon: 'fa-cookie-bite', color: 'text-pink-400' },
             { id: 'aromas-salgados', nome: 'Aromas Salgados', icon: 'fa-drumstick-bite', color: 'text-yellow-600' },
@@ -411,9 +246,7 @@
             { id: 'sorvetes', nome: 'Sorvetes', icon: 'fa-ice-cream', color: 'text-purple-400' },
         ];
         
-        // Dados iniciais (só serão usados se o banco estiver vazio)
         const dadosIniciaisNutraceuticos = [
-            // (Lista completa de nutracêuticos...)
             { tipo: "BIOATIVO", codigo: "PQ993", descricao: "DHA Algas em pó", lote: "", quantidade: 300, unidade: "g" },
             { tipo: "BIOATIVO", codigo: "PQ605", descricao: "Glucoronolactona", lote: "5226/23", quantidade: 396.67, unidade: "g" },
             { tipo: "BIOATIVO", codigo: "PQ1171", descricao: "D Ribose", lote: "", quantidade: 150, unidade: "g" },
@@ -440,38 +273,183 @@
             { tipo: "MINERAIS", codigo: "PQ704", descricao: "Bisglicinato de cobre", lote: "2527/25", quantidade: 400, unidade: "g" }
         ];
 
-        // DADOS DE SORVETE ATUALIZADOS
+        // LISTA COMPLETA DE SORVETES ORDENADA ALFABETICAMENTE PELA DESCRIÇÃO
         const dadosIniciaisSorvetes = [
-            { codigo: '5310', descricao: 'DORELLA 21% PROTEIN S ADD ACUCAR (1X20KG)', lote: 'AMOSTRA', quantidade: 3.602, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '5260', descricao: 'RECHEIO ORO NEGRO (6X4KG)', lote: '03030021/0325', quantidade: 2.4, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '4883', descricao: 'DORELLA BRANCA (6X4KG)', lote: '03031367/0925', quantidade: 1.383, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '4866', descricao: 'CREME DE COCO BRANCO (6X4KG)', lote: '03030296/1025', quantidade: 2.43, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '4857', descricao: 'DORELLA (6X4KG)', lote: '03030839/1025', quantidade: 3.82, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '4863', descricao: 'CHOCOWAFER (6X4KG)', lote: '03030366/0325', quantidade: 2.36, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '4951', descricao: 'DORELLA SEM ADICAO DE ACUCAR (1X20KG)', lote: '03030650/0925', quantidade: 4, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '4952', descricao: 'LEITINHO SEM ADICAO DE ACUCAR (1X20KG)', lote: '03030737/0325', quantidade: 1.55, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '4891', descricao: 'RECHEIO BABA VERDE (6X4KG)', lote: '03031644/0925', quantidade: 3.041, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '5001', descricao: 'RECHEIO TRUFADO BRANCO (1X20KG)', lote: '03030462/1125', quantidade: 3.1, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '5275', descricao: 'RECHEIO DE AVELA ESSENCIAL (1X20KG)', lote: '03030375/0825', quantidade: 2, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: 'DSO845.01', descricao: 'RECHEIO PISTACHE SEM ADD ACUCAR (1X20KG)', lote: '', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '5278', descricao: 'RECHEIO PISTACHE (6X4KG)', lote: '03031400/0425', quantidade: 0.6, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '2740', descricao: 'RECHEIO DE MORANGO ESSENCIAL (1X20KG)', lote: '03030477/0325', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '4900', descricao: 'PACOCA ESSENCIAL (6X4KG)', lote: '03031044/0225', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '4860', descricao: 'CHOCOLATE CREAM (6X4KG)', lote: '03031982/0125', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '4892', descricao: 'TRUFA ESSENCIAL (6X4KG)', lote: '0303117/0225', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '5618', descricao: 'CHOCOSKIMO AO LEITE ESSENCIAL (6X4KG)', lote: '03031448/0725', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: '5617', descricao: 'CHOCOSKIMO BRANCO ESSENCIAL (6X4KG)', lote: '03031768/0325', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: 'DSO1049', descricao: 'CHOCOSKIMO ESSENCIAL SPECULOOS (1X12 KG)', lote: 'AMOSTRA', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' },
-            { codigo: 'DSO848', descricao: 'RECHEIO FORNEAVEL FRUTAS VERMELHAS (1X12KG)', lote: 'AMOSTRA', quantidade: 0.2, unidade: 'kg', tipo: 'RECHEIO' }
+            {codigo: "2152", descricao: "AROMA ID NATURAL GUARANA GUA002 (1X4KG)", quantidade: 3.103, lote: "03031476/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4879", descricao: "BRIGADEIRO CREAM (6X4KG)", quantidade: 3.318, lote: "03030355/0525", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4877", descricao: "CARAMELO CREAM (6X4KG)", quantidade: 1.378, lote: "03031254/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4877", descricao: "CARAMELO CREAM (6X4KG)", quantidade: 1.07, lote: "03031902/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4869", descricao: "CHOCO BUENISIMO (6X4KG)", quantidade: 2.267, lote: "03030018/0625", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4869", descricao: "CHOCO BUENISIMO (6X4KG)", quantidade: 0.2, lote: "03031071/0125", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4878", descricao: "CHOCO BROWNIE (6X4KG)", quantidade: 5.92, lote: "03031012/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4871", descricao: "CHOCO CROKANTE (6X4KG)", quantidade: 3.071, lote: "03031806/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4860", descricao: "CHOCOLATE CREAM (6X4KG)", quantidade: 9.34, lote: "03030254/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4860", descricao: "CHOCOLATE CREAM (6X4KG)", quantidade: 0.2, lote: "03031982/0125", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4860", descricao: "CHOCOLATE CREAM (6X4KG)", quantidade: 1.089, lote: "03030254/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4860", descricao: "CHOCOLATE CREAM (6X4KG)", quantidade: 0.2, lote: "03031982/0125", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "1456", descricao: "CHOCOLATE PREMIUM (8X1KG)", quantidade: 0.23, lote: "03030420/0925", tipo: "PÓ", unidade: "kg"},
+            {codigo: "4888", descricao: "CHOCOCREMA", quantidade: 1.97, lote: "03031527/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5618", descricao: "CHOCOSKIMO AO LEITE ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031448/0725", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5618", descricao: "CHOCOSKIMO AO LEITE ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031448/0725", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4880", descricao: "CHOCOSKIMO BRANCO (6X4KG)", quantidade: 1.021, lote: "03031768/0325", tipo: 'RECHEIO', unidade: "kg"},
+            {codigo: "5617", descricao: "CHOCOSKIMO BRANCO ESSENCIAL (6X4KG)", quantidade: 0.292, lote: "03031768/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5617", descricao: "CHOCOSKIMO BRANCO ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031768/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5617", descricao: "CHOCOSKIMO BRANCO ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031768/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5512", descricao: "CHOCOSKIMO BRANCO ESSENCIAL (1X12 KG)", quantidade: 0.598, lote: "03031768/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "DSO1049", descricao: "CHOCOSKIMO ESSENCIAL SPECULOOS (1X12 KG)", quantidade: 0.2, lote: "AMOSTRA", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "DSO1049", descricao: "CHOCOSKIMO ESSENCIAL SPECULOOS (1X12 KG)", quantidade: 0.2, lote: "AMOSTRA", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4872", descricao: "CHOCOSKIMO MEIO AMARGO (6X4KG)", quantidade: 1.431, lote: "03031875/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5510", descricao: "CHOCOSKIMO MEIO AMARGO ESSENCIAL (1X12KG)", quantidade: 3.897, lote: "03030984/0525", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4861", descricao: "CHOCOTINE (6X4KG)", quantidade: 2.539, lote: "03032096/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4861", descricao: "CHOCOTINE (6X4KG)", quantidade: 0.2, lote: "03030463/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4861", descricao: "CHOCOTINE (6X4KG)", quantidade: 0.2, lote: "03032096/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4861", descricao: "CHOCOTINE (6X4KG)", quantidade: 0.2, lote: "03030463/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4861", descricao: "CHOCOTINE (6X4KG)", quantidade: 0.2, lote: "03032096/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "1457", descricao: "CHOCOTINE (8X1KG)", quantidade: 0.606, lote: "03031743/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4868", descricao: "CHOCOTRUFA (6X4KG)", quantidade: 1.244, lote: "03030341/0825", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4870", descricao: "CHOCOTRUFA BRANCA (6X4KG)", quantidade: 3.123, lote: "03030229/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4870", descricao: "CHOCOTRUFA BRANCA (6X4KG)", quantidade: 4, lote: "03031330/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4863", descricao: "CHOCOWAFER (6X4KG)", quantidade: 2.36, lote: "03030366/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4863", descricao: "CHOCOWAFER (6X4KG)", quantidade: 2.36, lote: "03030366/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4898", descricao: "CHOCOWAFFER BRANCO (6X4KG)", quantidade: 0.82, lote: "03030201/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "1395", descricao: "COBERTURA CHOCOLATE (1X7KG)", quantidade: 7, lote: "03031627/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "1485", descricao: "COBERTURA CARAMELO (1X7KG)", quantidade: 3.701, lote: "03031625/0125", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4866", descricao: "CREME DE COCO BRANCO (6X4KG)", quantidade: 2.43, lote: "03030296/1025", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4866", descricao: "CREME DE COCO BRANCO (6X4KG)", quantidade: 0.4, lote: "03030429/0825", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4866", descricao: "CREME DE COCO BRANCO (6X4KG)", quantidade: 0.4, lote: "03030656/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4866", descricao: "CREME DE COCO BRANCO (6X4KG)", quantidade: 0.2, lote: "03030296/1025", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5216", descricao: "CREME DE DORELLA (6X4KG)", quantidade: 3.073, lote: "03030271/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5216", descricao: "CREME DE DORELLA (6X4KG)", quantidade: 0.808, lote: "03030477/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5217", descricao: "CREME DE DORELLA (1X14KG)", quantidade: 6.3, lote: "03030629/0625", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5217", descricao: "CREME DE DORELLA (1X14KG)", quantidade: 2, lote: "03030629/0625", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5217", descricao: "CREME DE DORELLA (1X14KG)", quantidade: 0.2, lote: "0303477/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4914", descricao: "CREME DE PACOCA (6X4KG)", quantidade: 3.371, lote: "03030860/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4691", descricao: "CREME DE PACOCA (1X14KG)", quantidade: 0.8, lote: "03030766/0125", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4873", descricao: "CREME DE TRUFA (6X4KG)", quantidade: 0.2, lote: "03032089/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4862", descricao: "D`COOKIES (6X4KG)", quantidade: 3.397, lote: "03030340/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "SemCód", descricao: "DORELLA", quantidade: 4.2, lote: "03031359/0825", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4857", descricao: "DORELLA (6X4KG)", quantidade: 3.82, lote: "03030839/1025", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5310", descricao: "DORELLA 21% PROTEIN S ADD ACUCAR (1X20KG)", quantidade: 3.602, lote: "AMOSTRA", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5310", descricao: "DORELLA 21% PROTEIN S ADD ACUCAR (1X20KG)", quantidade: 0.578, lote: "AMOSTRA", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4883", descricao: "DORELLA BRANCA (6X4KG)", quantidade: 1.383, lote: "03031367/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4858", descricao: "DORELLA ESSENCIAL (6X4KG)", quantidade: 2.719, lote: "03031164/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "MD36708", descricao: "DORELLA OSSATURA", quantidade: 2, lote: "03031532/0525", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "DSO1022", descricao: "DORELLA S ADD AC OSSATURA (1X20KG)", quantidade: 9.956, lote: "03031532/0525", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4951", descricao: "DORELLA SEM ADICAO DE ACUCAR (1X20KG)", quantidade: 4, lote: "03030650/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4951", descricao: "DORELLA SEM ADICAO DE ACUCAR (1X20KG)", quantidade: 1.4, lote: "03030650/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4554", descricao: "DOREGEL BAF 10 (8X1KG)", quantidade: 1.699, lote: "03030519/0925", tipo: "PÓ", unidade: "kg"},
+            {codigo: "3055", descricao: "DOREMAX AÇAÍ (10X1KG)", quantidade: 0.745, lote: "03030678/0725", tipo: "PÓ", unidade: "kg"},
+            {codigo: "3056", descricao: "DOREMAX ALGODAO DOCE (10X1KG)", quantidade: 1.035, lote: "03031491/0325", tipo: "PÓ", unidade: "kg"},
+            {codigo: "3805", descricao: "DOREMAX BALA FRAMBOESA (10X1KG)", quantidade: 0.998, lote: "03030202/0525", tipo: "PÓ", unidade: "kg"},
+            {codigo: "4424", descricao: "DOREMAX CHICLETE ROSA (10X1KG)", quantidade: 1.044, lote: "03030141/0425", tipo: "PÓ", unidade: "kg"},
+            {codigo: "4422", descricao: "DOREMAX CHOCOLATE BELGA (8X1KG)", quantidade: 0.625, lote: "03030868/0125", tipo: "PÓ", unidade: "kg"},
+            {codigo: "2292", descricao: "DOREMAX CHOCOLATE BRANCO (10X1KG)", quantidade: 1.5, lote: "03031357/0925", tipo: "PÓ", unidade: "kg"},
+            {codigo: "3057", descricao: "DOREMAX DOCE DE LEITE (10X1KG)", quantidade: 0.272, lote: "03030149/0325", tipo: "PÓ", unidade: "kg"},
+            {codigo: "4418", descricao: "DOREMAX DOCE DE LEITE ARGENTINO (10X1KG)", quantidade: 0.551, lote: "03030163/0325", tipo: "PÓ", unidade: "kg"},
+            {codigo: "4421", descricao: "DOREMAX DORELLA (8X1KG)", quantidade: 0.483, lote: "F2662/1224", tipo: "PÓ", unidade: "kg"},
+            {codigo: "2284", descricao: "DOREMAX LEITE CONDENSADO (10X1KG)", quantidade: 1.329, lote: "03031281/0325", tipo: "PÓ", unidade: "kg"},
+            {codigo: "5651", descricao: "DOREMAX LIMÃO SICILIANO", quantidade: 1.659, lote: "03031266/0925", tipo: "PÓ", unidade: "kg"},
+            {codigo: "5109", descricao: "DOREMAX MACA VERDE (10X1KG)", quantidade: 0.256, lote: "03031739/0925", tipo: "PÓ", unidade: "kg"},
+            {codigo: "2280", descricao: "DOREMAX MARACUJÁ (10X1KG)", quantidade: 0.176, lote: "03031802/0825", tipo: "PÓ", unidade: "kg"},
+            {codigo: "3973", descricao: "DOREMAX MARACUJA VERÃO (10X1KG)", quantidade: 1.803, lote: "03030373/0825", tipo: "PÓ", unidade: "kg"},
+            {codigo: "5312", descricao: "DOREMAX MELANCIA VERÃO (10X1KG)", quantidade: 0.755, lote: "03030784/0625", tipo: "PÓ", unidade: "kg"},
+            {codigo: "2637", descricao: "DOREMAX MILHO VERDE (10X1KG)", quantidade: 1.756, lote: "03030222/0525", tipo: "PÓ", unidade: "kg"},
+            {codigo: "4272", descricao: "DOREMAX MILHO VERDE CREMOSO (10X1KG)", quantidade: 0.806, lote: "03030504/0325", tipo: "PÓ", unidade: "kg"},
+            {codigo: "3800", descricao: "DOREMAX MORANGO DOCE (10X1KG)", quantidade: 1.074, lote: "03030060/0525", tipo: "PÓ", unidade: "kg"},
+            {codigo: "3059", descricao: "DOREMAX PACOCA (10X1KG)", quantidade: 1.136, lote: "03031767/0925", tipo: "PÓ", unidade: "kg"},
+            {codigo: "4420", descricao: "DOREMAX PUDIM DE LEITE CONDENSADO (10X1KG)", quantidade: 0.832, lote: "03030064/0425", tipo: "PÓ", unidade: "kg"},
+            {codigo: "2290", descricao: "DOREMAX SABORIZANTE MORANGO (10X1KG)", quantidade: 1.299, lote: "03030854/0725", tipo: "PÓ", unidade: "kg"},
+            {codigo: "1855", descricao: "EXTRATO NATURAL DE GUARANA (1X4KG)", quantidade: 0.54, lote: "03030220/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4859", descricao: "LEITINHO ESSENCIAL (6X4KG)", quantidade: 0.32, lote: "03030046/0825", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4859", descricao: "LEITINHO ESSENCIAL (6X4KG)", quantidade: 0.4, lote: "03031803/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4952", descricao: "LEITINHO SEM ADICAO DE ACUCAR (1X20KG)", quantidade: 1.55, lote: "03030737/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4952", descricao: "LEITINHO SEM ADICAO DE ACUCAR (1X20KG)", quantidade: 3, lote: "03031567/0525", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4875", descricao: "LEMON COOKIES (6X4KG)", quantidade: 1.255, lote: "03030198/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "3783", descricao: "MAXGEL DS (1X10KG)", quantidade: 2.022, lote: "03031528/0225", tipo: "PÓ", unidade: "kg"},
+            {codigo: "4545", descricao: "MEGACREME (8X1KG)", quantidade: 0.828, lote: "03031514/0825", tipo: "PÓ", unidade: "kg"},
+            {codigo: "4557", descricao: "MEGACREME ZERO (8X1KG)", quantidade: 1.284, lote: "03030055/1025", tipo: "PÓ", unidade: "kg"},
+            {codigo: "5294", descricao: "MOLHO SABOR CERVEJA PRETA (6X1,01KG)", quantidade: 0.8, lote: "AMOSTRA", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4900", descricao: "PACOCA ESSENCIAL (6X4KG)", quantidade: 3.238, lote: "03030105/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4900", descricao: "PACOCA ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031044/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "1320", descricao: "PASTA BAUNILHA GOLD (12X1KG)", quantidade: 0.383, lote: "03030416/0925", tipo: "PASTA", unidade: "kg"},
+            {codigo: "5306", descricao: "PASTA CEREJA (1X20KG)", quantidade: 0.319, lote: "AMOSTRA", tipo: "PASTA", unidade: "kg"},
+            {codigo: "5670", descricao: "PASTA CHOCOLATE (1X20KG)", quantidade: 1.6, lote: "03031578/0125", tipo: "PASTA", unidade: "kg"},
+            {codigo: "1489", descricao: "PASTA CHOCOLATE BRANCO (12X1KG)", quantidade: 0.144, lote: "03030735/0325", tipo: "PASTA", unidade: "kg"},
+            {codigo: "1324", descricao: "PASTA COCO (12X1KG)", quantidade: 0.531, lote: "03030734/0325", tipo: "PASTA", unidade: "kg"},
+            {codigo: "1681", descricao: "PASTA CREME AMERICANO (12X1KG)", quantidade: 0.13, lote: "03030358/0825", tipo: "PASTA", unidade: "kg"},
+            {codigo: "5686", descricao: "PASTA DE AMENDOA (1X18KG)", quantidade: 2.344, lote: "03010196/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "1531", descricao: "PASTA DE AVELÃ (12X1KG)", quantidade: 0.889, lote: "03031684/0725", tipo: "PASTA", unidade: "kg"},
+            {codigo: "1494", descricao: "PASTA DE BANANA (12X1KG)", quantidade: 0.385, lote: "03030279/0925", tipo: "PASTA", unidade: "kg"},
+            {codigo: "1656", descricao: "PASTA DE CAFÉ (12X1KG)", quantidade: 0.387, lote: "03030508/0425", tipo: "PASTA", unidade: "kg"},
+            {codigo: "1510", descricao: "PASTA DE MENTA (12X1KG)", quantidade: 1.751, lote: "03031813/1025", tipo: "PASTA", unidade: "kg"},
+            {codigo: "1365", descricao: "PASTA DE PISTACHE (1X20KG)", quantidade: 0.5, lote: "03030728/0125", tipo: "PASTA", unidade: "kg"},
+            {codigo: "1521", descricao: "PASTA DE TORTA DELICIA (1X20KG)", quantidade: 0.283, lote: "AMOSTRA", tipo: "PASTA", unidade: "kg"},
+            {codigo: "4407", descricao: "PASTA DORELLA (12X1KG)", quantidade: 1.2, lote: "03030942/0925", tipo: "PASTA", unidade: "kg"},
+            {codigo: "1326", descricao: "PASTA LEITE CONDENSADO (12X1KG)", quantidade: 3.653, lote: "03030510/0425", tipo: "PASTA", unidade: "kg"},
+            {codigo: "1326", descricao: "PASTA LEITE CONDENSADO (12X1KG)", quantidade: 0.4, lote: "03030510/0425", tipo: "PASTA", unidade: "kg"},
+            {codigo: "1265", descricao: "PASTA MAMAO (1X20KG)", quantidade: 0.655, lote: "AMOSTRA", tipo: "PASTA", unidade: "kg"},
+            {codigo: "5364", descricao: "PASTA MORANGO PLUS (12X1KG)", quantidade: 1.773, lote: "03030289/0825", tipo: "PASTA", unidade: "kg"},
+            {codigo: "1692", descricao: "PASTA MORANGURT (12X1KG)", quantidade: 0.635, lote: "03030503/0325", tipo: "PASTA", unidade: "kg"},
+            {codigo: "4901", descricao: "PASTA NOCCIOLA (6X3KG)", quantidade: 1.411, lote: "03031005/0725", tipo: "PASTA", unidade: "kg"},
+            {codigo: "4905", descricao: "PASTA PISTACHIO (6X3KG)", quantidade: 2.245, lote: "03030299/0925", tipo: "PASTA", unidade: "kg"},
+            {codigo: "4905", descricao: "PASTA PISTACHIO (6X3KG)", quantidade: 0.4, lote: "03031650/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "DSO848", descricao: "PASTA TANGERINA (1X20KG)", quantidade: 0.2, lote: "AMOSTRA", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "1435", descricao: "PASTA TORTA DE LIMAO(12X1KG)", quantidade: 0.491, lote: "03030206/0825", tipo: "PASTA", unidade: "kg"},
+            {codigo: "5645", descricao: "RECHEIO ACAI COM GUARANA (6X4KG)", quantidade: 3.05, lote: "03030944/0625", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5645", descricao: "RECHEIO ACAI COM GUARANA (6X4KG)", quantidade: 0.6, lote: "03030408/0625", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4891", descricao: "RECHEIO BABA VERDE (6X4KG)", quantidade: 3.041, lote: "03031644/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4890", descricao: "RECHEIO BABA ROXA (6X4KG)", quantidade: 1.56, lote: "03031930/0125", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5233", descricao: "RECHEIO CREME DE VALSA (6X4KG)", quantidade: 3.057, lote: "03031675/0725", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5233", descricao: "RECHEIO CREME DE VALSA (6X4KG)", quantidade: 0.6, lote: "0303686/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "1672", descricao: "RECHEIO DE AMARENA (6X2KG)", quantidade: 1.519, lote: "03030757/1025", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "1672", descricao: "RECHEIO DE AMARENA (6X2KG)", quantidade: 0.2, lote: "03030375/0825", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5275", descricao: "RECHEIO DE AVELA ESSENCIAL (1X20KG)", quantidade: 2, lote: "03030375/0825", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4897", descricao: "RECHEIO DE COOKIES BRANCO (6X4KG)", quantidade: 0.4, lote: "03030875/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4670", descricao: "RECHEIO DE FRUTAS VERMELHAS (6X2KG)", quantidade: 1.341, lote: "03030085/1025", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4310", descricao: "RECHEIO DE LIMAO (6X2KG)", quantidade: 2, lote: "03030538/1025", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5709", descricao: "RECHEIO DE LIMAO SICILIANO CS (1X20KG)", quantidade: 0.5, lote: "AMOSTRA", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "1416", descricao: "RECHEIO DE MARACUJA (6X2KG)", quantidade: 1.786, lote: "03031993/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "1416", descricao: "RECHEIO DE MARACUJA (6X2KG)", quantidade: 2, lote: "03031033/0825", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4673", descricao: "RECHEIO DE MORANGO (6X2KG)", quantidade: 2, lote: "03031296/0825", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "2740", descricao: "RECHEIO DE MORANGO ESSENCIAL (1X20KG)", quantidade: 11, lote: "03030477/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "2740", descricao: "RECHEIO DE MORANGO ESSENCIAL (1X20KG)", quantidade: 0.2, lote: "03030477/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4909", descricao: "RECHEIO DE OVOMALTINE RC.02 (6X4KG)", quantidade: 3.619, lote: "F2595/1124", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5313", descricao: "RECHEIO DE SPECULOOS (6X4KG)", quantidade: 3.956, lote: "03032061/1025", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5643", descricao: "RECHEIO DOLCE LIMONE (6X4KG)", quantidade: 2.69, lote: "03030325/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5643", descricao: "RECHEIO DOLCE LIMONE (6X4KG)", quantidade: 1.032, lote: "03030147/0525", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5643", descricao: "RECHEIO DOLCE LIMONE (6X4KG)", quantidade: 0.2, lote: "03031235/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5643", descricao: "RECHEIO DOLCE LIMONE (6X4KG)", quantidade: 0.4, lote: "03030620/0725", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5044", descricao: "RECHEIO DORELLA MEGA CRUNCH (6X4KG)", quantidade: 3.206, lote: "03031898/0125", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "DSO848", descricao: "RECHEIO FORNEAVEL FRUTAS VERMELHAS (1X12KG)", quantidade: 0.2, lote: "AMOSTRA", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5049", descricao: "RECHEIO LARANJA CRUNCH (6X4KG)", quantidade: 0.931, lote: "03030265/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5049", descricao: "RECHEIO LARANJA CRUNCH (6X4KG)", quantidade: 0.4, lote: "03030265/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4864", descricao: "RECHEIO LEITINHO (6X4KG)", quantidade: 1.4, lote: "03030436/0125", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4864", descricao: "RECHEIO LEITINHO (6X4KG)", quantidade: 6.673, lote: "03031128/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4864", descricao: "RECHEIO LEITINHO (6X4KG)", quantidade: 1, lote: "03031192/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4864", descricao: "RECHEIO LEITINHO (6X4KG)", quantidade: 1, lote: "03030436/0125", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5260", descricao: "RECHEIO ORO NEGRO (6X4KG)", quantidade: 2.4, lote: "03030021/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4662", descricao: "RECHEIO PESSEGO COM LARANJA (6X2KG)", quantidade: 1.34, lote: "03031402/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5278", descricao: "RECHEIO PISTACHE (6X4KG)", quantidade: 0.6, lote: "03031400/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5278", descricao: "RECHEIO PISTACHE (6X4KG)", quantidade: 0.6, lote: "03031400/0425", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5642", descricao: "RECHEIO PISTACHE DUBAI (6X4KG)", quantidade: 2.593, lote: "03031368/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5642", descricao: "RECHEIO PISTACHE DUBAI (6X4KG)", quantidade: 1.6, lote: "03031661/0825", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "DSO845.01", descricao: "RECHEIO PISTACHE SEM ADD ACUCAR (1X20KG)", quantidade: 0.2, lote: "", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "DSO845.01", descricao: "RECHEIO PISTACHE SEM ADD ACUCAR (1X20KG)", quantidade: 0.2, lote: "", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4876", descricao: "RECHEIO SABOR CHICLETE (6X4KG)", quantidade: 1.665, lote: "03031802/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5386", descricao: "RECHEIO SABOR PISTACHE (6X4KG)", quantidade: 3.5, lote: "03031599/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5386", descricao: "RECHEIO SABOR PISTACHE (6X4KG)", quantidade: 0.647, lote: "0303623/0625", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5386", descricao: "RECHEIO SABOR PISTACHE (6X4KG)", quantidade: 0.8, lote: "03031599/0925", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4950", descricao: "RECHEIO TORTA LIMAO SEM ADICAO ACUCARES (6X4KG)", quantidade: 0.15, lote: "AMOSTRA", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "5001", descricao: "RECHEIO TRUFADO BRANCO (1X20KG)", quantidade: 3.1, lote: "03030462/1125", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4892", descricao: "TRUFA ESSENCIAL (6X4KG)", quantidade: 3.403, lote: "03031984/0225", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4892", descricao: "TRUFA ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "0303117/0225", tipo: "RECHEIO", unidade: "kg"}
         ];
-
-
+        
         let todosOsProdutos = [];
         let salaAtiva = 'boas-vindas';
-        let sidebarAberta = true; // Começa aberta na tela de boas-vindas
-        let unsubscribe = null; // Para o listener do Firestore
+        let sidebarAberta = true; 
+        let unsubscribe = null; 
 
-        // Elementos da DOM
         const sidebar = document.getElementById('sidebar');
         const sidebarNav = document.getElementById('sidebar-nav');
         const mainContent = document.getElementById('main-content');
@@ -484,7 +462,6 @@
         const addItemBtn = document.getElementById('add-item-btn');
         const loadingSpinner = document.getElementById('loading-spinner');
         
-        // Elementos do Modal de Item
         const itemModalBackdrop = document.getElementById('item-modal-backdrop');
         const itemModal = document.getElementById('item-modal');
         const itemForm = document.getElementById('item-form');
@@ -500,7 +477,6 @@
         const tipoContainer = document.getElementById('tipo-container');
         const itemObservacoesInput = document.getElementById('item-observacoes');
         
-        // Elementos do Modal de Retirada
         const retiradaModalBackdrop = document.getElementById('retirada-modal-backdrop');
         const retiradaModal = document.getElementById('retirada-modal');
         const retiradaForm = document.getElementById('retirada-form');
@@ -510,12 +486,8 @@
         const retiradaQuantidadeInput = document.getElementById('retirada-quantidade');
         const retiradaMotivoInput = document.getElementById('retirada-motivo');
 
-        // Toast (Notificação)
         const toast = document.getElementById('toast');
 
-        // ---- INICIALIZAÇÃO ----
-
-        // Função principal de inicialização
         async function initApp() {
             console.log("Iniciando app...");
             renderSidebar();
@@ -523,12 +495,8 @@
             addEventListeners();
             
             try {
-                // Força o login anônimo
                 console.log("Forçando autenticação anônima...");
-                // Correção do erro custom-token-mismatch:
-                // Ignoramos o __initial_auth_token e sempre usamos o anônimo
                 await signInAnonymously(auth);
-                
             } catch (error) {
                 console.error("Erro durante o login:", error);
                 showToast(`Erro de autenticação: ${error.message}`, 'bg-red-600');
@@ -536,19 +504,15 @@
                 return;
             }
 
-            // O onAuthStateChanged vai lidar com o carregamento dos dados
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     console.log("Usuário autenticado:", user.uid);
-                    userId = user.uid; // Embora seja anônimo, ainda temos um UID
+                    userId = user.uid; 
                     
-                    // ATUALIZAÇÃO PARA CAMINHO PÚBLICO
-                    // Todos os usuários (mesmo anônimos) acessarão este mesmo caminho
                     const collectionPath = `artifacts/${appId}/public/data/salas-produtos`;
                     produtosCollectionRef = collection(db, collectionPath);
                     console.log("Usando caminho público do Firestore:", collectionPath);
                     
-                    // Inicia o listener em tempo real
                     iniciarListenerFirestore();
                 } else {
                     console.log("Usuário não autenticado.");
@@ -558,681 +522,362 @@
             });
         }
         
-        // Inicia o listener do Firestore para dados em tempo real
         function iniciarListenerFirestore() {
             console.log("Iniciando listener do Firestore...");
-            if (unsubscribe) unsubscribe(); // Cancela listener anterior, se houver
+            if (unsubscribe) unsubscribe(); 
             
-            // Ouve por mudanças na coleção inteira
             unsubscribe = onSnapshot(produtosCollectionRef, async (snapshot) => {
                 console.log("Dados recebidos do Firestore. Documentos:", snapshot.size);
-                
-                // Processa os dados *primeiro* para verificar o conteúdo
                 todosOsProdutos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                // --- INÍCIO DA NOVA LÓGICA DE VERIFICAÇÃO ---
-                
+                // LÓGICA DE MIGRAÇÃO DE DADOS
                 if (snapshot.empty) {
-                    // 1. Banco de dados 100% vazio. Roda a função principal de popular.
-                    console.log("Banco de dados vazio. Populando com dados iniciais (Nutra + Sorvetes)...");
-                    await popularDadosIniciais();
-                    return; // O listener vai rodar de novo com os dados novos.
+                    console.log("Banco de dados vazio. Populando com dados iniciais...");
+                    await popularDadosIniciaisCompletos(); 
+                    return; 
                 }
 
-                // 2. Banco de dados NÃO está vazio. Checa se Sorvetes existe.
-                const temSorvetes = todosOsProdutos.some(p => p.sala === 'sorvetes');
-                
-                if (!temSorvetes) {
-                    // O DB tem dados (provavelmente Nutra), mas não Sorvetes.
-                    console.log("Detectamos dados existentes, mas 'Sorvetes' está faltando. Adicionando Sorvetes...");
-                    await adicionarApenasSorvetes(); // Adiciona SÓ os sorvetes
-                    return; // O listener vai rodar de novo com os dados novos.
+                const migracaoFeita = todosOsProdutos.some(p => p.codigo === 'DSO1022');
+                // Checa se tem algum item da lista antiga (ex: 5310 com qtd 3.602) E NÃO tem o item marcador novo
+                // A lista antiga tinha '5310' com 3.602. A nova também tem.
+                // A diferença chave é o item 'DSO1022' que só existe na nova lista completa.
+                // Se tem '5310' mas não tem 'DSO1022', é a lista antiga ou incompleta.
+                const temItemAntigo = todosOsProdutos.some(p => p.codigo === '5310');
+
+                if (!migracaoFeita && temItemAntigo) {
+                    console.log("Detectamos lista antiga de sorvetes. Iniciando migração...");
+                    loadingSpinner.style.display = 'flex';
+                    await migrarParaNovaListaSorvetes(); 
+                    showToast('Estoque de Sorvetes atualizado!', 'bg-green-600');
+                    return; 
                 }
                 
-                // --- FIM DA NOVA LÓGICA DE VERIFICAÇÃO ---
+                // Verifica se não tem NENHUM sorvete (caso tenha sido deletado manualmente)
+                const temSorvete = todosOsProdutos.some(p => p.sala === 'sorvetes');
+                if (!temSorvete && !snapshot.empty) {
+                     console.log("Sem sorvetes no banco. Adicionando...");
+                     await migrarParaNovaListaSorvetes(); // Reutiliza a função para adicionar
+                     return;
+                }
 
-                // 3. Se chegou aqui, o DB não está vazio E já tem sorvetes.
-                // Então, apenas renderiza.
                 console.log("Banco de dados carregado. Renderizando...");
                 if (salaAtiva === 'boas-vindas') {
                     mostrarTelaBoasVindas();
                 } else {
                     renderizarProdutos(salaAtiva);
                 }
-                
                 loadingSpinner.style.display = 'none';
 
             }, (error) => {
                 console.error("Erro ao ouvir dados do Firestore: ", error);
-                showToast("Erro ao carregar dados. Verifique as regras do Firestore.", 'bg-red-600');
+                showToast("Erro ao carregar dados.", 'bg-red-600');
                 loadingSpinner.style.display = 'none';
             });
         }
         
-        // NOVA FUNÇÃO: Adiciona apenas os dados de sorvete
-        async function adicionarApenasSorvetes() {
-            console.log("Iniciando a adição SOMENTE dos dados de Sorvetes...");
+        async function migrarParaNovaListaSorvetes() {
+            console.log("Iniciando migração dos dados de Sorvetes...");
             const batch = writeBatch(db);
             
-            // Adiciona produtos de Sorvetes
+            const produtosSorvetesAntigos = todosOsProdutos.filter(p => p.sala === 'sorvetes');
+            console.log(`Deletando ${produtosSorvetesAntigos.length} produtos antigos de Sorvetes...`);
+            produtosSorvetesAntigos.forEach(item => {
+                const docRef = doc(produtosCollectionRef, item.id);
+                batch.delete(docRef);
+            });
+            
+            console.log(`Adicionando ${dadosIniciaisSorvetes.length} novos produtos de Sorvetes...`);
             dadosIniciaisSorvetes.forEach(item => {
-                const docRef = doc(produtosCollectionRef); // Cria nova referência de doc
+                const docRef = doc(produtosCollectionRef); 
                 const nivelAlerta = calcularNivelAlertaPadrao(item.quantidade, item.unidade);
                 
                 batch.set(docRef, {
                     ...item,
-                    sala: 'sorvetes', // Define a sala
-                    observacoes: "", // Campo de observações
-                    alerta: nivelAlerta, // Nível de alerta automático
+                    sala: 'sorvetes', 
+                    observacoes: "", 
+                    alerta: nivelAlerta, 
                 });
             });
             
             try {
                 await batch.commit();
-                console.log("Dados de Sorvetes adicionados com sucesso!");
-                // O listener onSnapshot vai detectar essa mudança e recarregar
+                console.log("Migração de Sorvetes concluída com sucesso!");
             } catch (error) {
-                console.error("Erro ao adicionar dados de Sorvetes:", error);
-                showToast("Erro ao salvar dados de Sorvetes.", 'bg-red-600');
+                console.error("Erro durante a migração de Sorvetes:", error);
+                showToast("Erro ao atualizar dados de Sorvetes.", 'bg-red-600');
             }
         }
         
-        // Popula o Firestore com dados iniciais (Nutra + Sorvetes) se estiver 100% vazio
-        async function popularDadosIniciais() {
+        async function popularDadosIniciaisCompletos() {
             console.log("Iniciando a escrita dos dados iniciais (completos)...");
             const batch = writeBatch(db);
             
-            // Adiciona produtos de Nutracêuticos
             dadosIniciaisNutraceuticos.forEach(item => {
                 const docRef = doc(produtosCollectionRef); 
                 const nivelAlerta = calcularNivelAlertaPadrao(item.quantidade, item.unidade);
-                
-                batch.set(docRef, {
-                    ...item,
-                    sala: 'nutraceuticos', // Define a sala
-                    observacoes: "", 
-                    alerta: nivelAlerta, 
-                });
+                batch.set(docRef, { ...item, sala: 'nutraceuticos', observacoes: "", alerta: nivelAlerta });
             });
             
-            // Adiciona produtos de Sorvetes (igual à nova função)
             dadosIniciaisSorvetes.forEach(item => {
                 const docRef = doc(produtosCollectionRef); 
                 const nivelAlerta = calcularNivelAlertaPadrao(item.quantidade, item.unidade);
-                
-                batch.set(docRef, {
-                    ...item,
-                    sala: 'sorvetes', // Define a sala
-                    observacoes: "", 
-                    alerta: nivelAlerta, 
-                });
+                batch.set(docRef, { ...item, sala: 'sorvetes', observacoes: "", alerta: nivelAlerta });
             });
             
             try {
                 await batch.commit();
-                console.log("Dados iniciais (Nutra + Sorvetes) populados com sucesso!");
-                // O listener onSnapshot vai detectar essa mudança e recarregar
-            } catch (error)
-                {
+                console.log("Dados iniciais populados com sucesso!");
+            } catch (error) {
                 console.error("Erro ao popular dados iniciais:", error);
                 showToast("Erro ao salvar dados iniciais.", 'bg-red-600');
             }
         }
 
-        // ---- RENDERIZAÇÃO DA UI ----
-
-        // Renderiza a barra lateral (Sidebar)
         function renderSidebar() {
-            sidebarNav.innerHTML = ''; // Limpa a navegação
-            
-            // Link para Boas-Vindas
+            sidebarNav.innerHTML = ''; 
             const linkBoasVindas = criarLinkSidebar('boas-vindas', 'Boas-Vindas', 'fa-home', 'text-blue-400');
             sidebarNav.appendChild(linkBoasVindas);
-            
-            // Links das Salas (em ordem alfabética)
             salas.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(sala => {
                 const link = criarLinkSidebar(sala.id, sala.nome, sala.icon, sala.color);
                 sidebarNav.appendChild(link);
             });
         }
         
-        // Função auxiliar para criar links da sidebar
         function criarLinkSidebar(id, nome, icon, color) {
             const a = document.createElement('a');
-            a.href = '#';
-            a.dataset.sala = id;
+            a.href = '#'; a.dataset.sala = id;
             a.className = `flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors ${salaAtiva === id ? 'bg-gray-700 text-white' : ''}`;
-            a.innerHTML = `
-                <i class="fas ${icon} w-6 text-center ${color}"></i>
-                <span class="ml-4 font-medium">${nome}</span>
-            `;
-            a.onclick = (e) => {
-                e.preventDefault();
-                mudarDeSala(id);
-            };
+            a.innerHTML = `<i class="fas ${icon} w-6 text-center ${color}"></i><span class="ml-4 font-medium">${nome}</span>`;
+            a.onclick = (e) => { e.preventDefault(); mudarDeSala(id); };
             return a;
         }
         
-        // Preenche o <select> de salas no modal
         function preencherSelectSalas() {
             itemSalaSelect.innerHTML = '<option value="" disabled selected>Selecione uma sala</option>';
             salas.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(sala => {
                 const option = document.createElement('option');
-                option.value = sala.id;
-                option.textContent = sala.nome;
+                option.value = sala.id; option.textContent = sala.nome;
                 itemSalaSelect.appendChild(option);
             });
         }
 
-        // Renderiza os produtos na tela
         function renderizarProdutos(idSala) {
-            // Esconde a tela de boas-vindas e mostra a grade
             document.getElementById('welcome-screen').classList.add('hidden');
             productGrid.classList.remove('hidden');
-            
-            productGrid.innerHTML = ''; // Limpa a grade
+            productGrid.innerHTML = ''; 
             const filtroBusca = searchBar.value.toLowerCase();
-
             const produtosDaSala = todosOsProdutos.filter(p => p.sala === idSala);
-            
             const produtosFiltrados = produtosDaSala.filter(p => 
-                p.codigo.toLowerCase().includes(filtroBusca) ||
-                p.descricao.toLowerCase().includes(filtroBusca)
+                (p.codigo && p.codigo.toLowerCase().includes(filtroBusca)) ||
+                (p.descricao && p.descricao.toLowerCase().includes(filtroBusca))
             );
+            produtosFiltrados.sort((a, b) => (a.descricao || '').localeCompare(b.descricao || '')); // Ordena por DESCRIÇÃO conforme pedido
             
-            // Ordena por código
-            produtosFiltrados.sort((a, b) => a.codigo.localeCompare(b.codigo));
-            
-            // Atualiza mensagem de "nenhum item"
             if (produtosFiltrados.length === 0) {
                 noItemsMessage.classList.remove('hidden');
             } else {
                 noItemsMessage.classList.add('hidden');
             }
-
-            // Cria e adiciona os cards
             produtosFiltrados.forEach(item => {
-                const card = criarCardProduto(item);
-                productGrid.appendChild(card);
+                productGrid.appendChild(criarCardProduto(item));
             });
         }
         
-        // Mostra a tela de Boas-Vindas
         function mostrarTelaBoasVindas() {
             document.getElementById('welcome-screen').classList.remove('hidden');
             productGrid.classList.add('hidden');
             noItemsMessage.classList.add('hidden');
         }
 
-        // Função auxiliar para criar o card de um produto
         function criarCardProduto(item) {
             const card = document.createElement('div');
-            
-            // Lógica de Status (Calculado)
-            let status = 'Em Estoque';
-            let statusBg = 'bg-green-100';
-            let statusText = 'text-green-800';
-            let statusRing = 'ring-green-400';
-            
+            let status = 'Em Estoque', statusBg = 'bg-green-100', statusText = 'text-green-800', statusRing = 'ring-green-400';
             const quantidadeNum = parseFloat(item.quantidade);
             const alertaNum = parseFloat(item.alerta);
 
             if (quantidadeNum <= 0) {
-                status = 'Esgotado';
-                statusBg = 'bg-red-100';
-                statusText = 'text-red-800';
-                statusRing = 'ring-red-400';
+                status = 'Esgotado'; statusBg = 'bg-red-100'; statusText = 'text-red-800'; statusRing = 'ring-red-400';
             } else if (quantidadeNum <= alertaNum) {
-                status = 'Baixo Estoque';
-                statusBg = 'bg-yellow-100';
-                statusText = 'text-yellow-800';
-                statusRing = 'ring-yellow-400';
+                status = 'Baixo Estoque'; statusBg = 'bg-yellow-100'; statusText = 'text-yellow-800'; statusRing = 'ring-yellow-400';
             }
 
             card.className = `bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl ring-2 ring-transparent hover:${statusRing}`;
-            
-            // Formata as observações para o tooltip
-            const obsFormatada = item.observacoes ? item.observacoes.replace(/\\n/g, '\n') : 'Sem observações';
+            const obsFormatada = item.observacoes ? String(item.observacoes).replace(/\\n/g, '\n') : 'Sem observações';
 
             card.innerHTML = `
-                <!-- Cabeçalho do Card (Status e Código) -->
                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                     <span class="px-3 py-1 text-xs font-bold ${statusBg} ${statusText} rounded-full">${status}</span>
                     ${item.observacoes ? `<i class="fas fa-info-circle text-blue-400" data-tooltip="${obsFormatada}"></i>` : ''}
                 </div>
-
-                <!-- Corpo do Card -->
                 <div class="p-5 flex-1">
                     <div class="mb-3">
                         <p class="text-xs font-semibold text-blue-600 tracking-wide uppercase">CÓDIGO</p>
-                        <h3 class="text-2xl font-bold text-gray-900">${item.codigo}</h3>
+                        <h3 class="text-2xl font-bold text-gray-900">${item.codigo || 'Sem Código'}</h3>
                     </div>
-                    <p class="text-gray-700 font-medium mb-3 h-12">${item.descricao}</p>
-                    
+                    <p class="text-gray-700 font-medium mb-3 h-12">${item.descricao || 'Sem Descrição'}</p>
                     <div class="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                            <p class="text-gray-500">Lote</p>
-                            <p class="font-semibold text-gray-800">${item.lote || '--'}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500">Tipo</p>
-                            <p class="font-semibold text-gray-800">${item.tipo || '--'}</p>
-                        </div>
+                        <div><p class="text-gray-500">Lote</p><p class="font-semibold text-gray-800">${item.lote || '--'}</p></div>
+                        <div><p class="text-gray-500">Tipo</p><p class="font-semibold text-gray-800">${item.tipo || '--'}</p></div>
                     </div>
                 </div>
-
-                <!-- Quantidade (Rodapé) -->
                 <div class="px-5 py-4 bg-gray-50">
                     <p class="text-sm text-gray-500">Quantidade em Estoque</p>
-                    <p class="text-3xl font-bold text-gray-900">
-                        ${quantidadeNum.toLocaleString('pt-BR')} <span class="text-xl font-medium text-gray-500">${item.unidade}</span>
-                    </p>
-                    <p class="text-xs text-gray-400 mt-1">Alerta: ${alertaNum} ${item.unidade}</p>
+                    <p class="text-3xl font-bold text-gray-900">${quantidadeNum.toLocaleString('pt-BR')} <span class="text-xl font-medium text-gray-500">${item.unidade || 'un'}</span></p>
+                    <p class="text-xs text-gray-400 mt-1">Alerta: ${alertaNum} ${item.unidade || 'un'}</p>
                 </div>
-
-                <!-- Ações -->
                 <div class="flex border-t">
-                    <button class="btn-retirada flex-1 py-3 px-4 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors" data-id="${item.id}">
-                        <i class="fas fa-minus-circle mr-2"></i>Dar Baixa
-                    </button>
-                    <button class="btn-editar flex-1 py-3 px-4 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors border-l" data-id="${item.id}">
-                        <i class="fas fa-pencil-alt mr-2"></i>Editar
-                    </button>
-                    <button class="btn-excluir px-4 py-3 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-red-600 transition-colors border-l" data-id="${item.id}">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
+                    <button class="btn-retirada flex-1 py-3 px-4 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors" data-id="${item.id}"><i class="fas fa-minus-circle mr-2"></i>Dar Baixa</button>
+                    <button class="btn-editar flex-1 py-3 px-4 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors border-l" data-id="${item.id}"><i class="fas fa-pencil-alt mr-2"></i>Editar</button>
+                    <button class="btn-excluir px-4 py-3 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-red-600 transition-colors border-l" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button>
                 </div>
             `;
-            
-            // Adiciona listeners aos botões do card
             card.querySelector('.btn-retirada').addEventListener('click', () => abrirModalRetirada(item.id));
             card.querySelector('.btn-editar').addEventListener('click', () => abrirModalItem('edit', item.id));
             card.querySelector('.btn-excluir').addEventListener('click', () => excluirItem(item.id));
-
             return card;
         }
         
-        // ---- LÓGICA DE NEGÓCIO E EVENTOS ----
-
-        // Adiciona os principais event listeners da página
         function addEventListeners() {
-            // Botão de toggle do menu (mobile)
-            menuToggleBtn.addEventListener('click', () => {
-                sidebarAberta = !sidebarAberta;
-                updateLayout();
-            });
-            
-            // Botão de Adicionar Item
+            menuToggleBtn.addEventListener('click', () => { sidebarAberta = !sidebarAberta; updateLayout(); });
             addItemBtn.addEventListener('click', () => abrirModalItem('add'));
-            
-            // Fechar Modais
             document.querySelectorAll('.modal-close-btn, .modal-backdrop').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    fecharModalItem();
-                    fecharModalRetirada();
-                });
+                btn.addEventListener('click', () => { fecharModalItem(); fecharModalRetirada(); });
             });
-            
-            // Formulário de Adicionar/Editar Item
             itemForm.addEventListener('submit', salvarItem);
-            
-            // Formulário de Retirada
             retiradaForm.addEventListener('submit', salvarRetirada);
-            
-            // Barra de Busca
-            searchBar.addEventListener('input', () => {
-                if (salaAtiva !== 'boas-vindas') {
-                    renderizarProdutos(salaAtiva);
-                }
-            });
-            
-            // Atualiza o <select> de Tipo quando a Sala muda no modal
-            itemSalaSelect.addEventListener('change', (e) => {
-                renderizarCampoTipo(e.target.value);
-            });
+            searchBar.addEventListener('input', () => { if (salaAtiva !== 'boas-vindas') renderizarProdutos(salaAtiva); });
+            itemSalaSelect.addEventListener('change', (e) => { renderizarCampoTipo(e.target.value); });
         }
         
-        // Atualiza o layout (abrir/fechar sidebar)
         function updateLayout() {
-            if (sidebarAberta) {
-                sidebar.classList.remove('-translate-x-full');
-                mainContent.classList.add('md:ml-64');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                mainContent.classList.remove('md:ml-64');
-            }
+            if (sidebarAberta) { sidebar.classList.remove('-translate-x-full'); mainContent.classList.add('md:ml-64'); }
+            else { sidebar.classList.add('-translate-x-full'); mainContent.classList.remove('md:ml-64'); }
         }
 
-        // Navega para uma sala diferente
         function mudarDeSala(idSala) {
             salaAtiva = idSala;
             const sala = salas.find(s => s.id === idSala);
-            
-            // Define o título da página
             salaTitle.textContent = sala ? sala.nome : 'Boas-Vindas';
-            
-            // Atualiza a sidebar (destaque)
             renderSidebar(); 
-            
-            // Renderiza o conteúdo
-            if (idSala === 'boas-vindas') {
-                mostrarTelaBoasVindas();
-            } else {
-                renderizarProdutos(idSala);
-            }
-            
-            // Fecha a sidebar em telas pequenas
-            if (window.innerWidth < 768) {
-                sidebarAberta = false;
-                updateLayout();
-            }
+            if (idSala === 'boas-vindas') mostrarTelaBoasVindas(); else renderizarProdutos(idSala);
+            if (window.innerWidth < 768) { sidebarAberta = false; updateLayout(); }
         }
         
-        // Renderiza o campo "Tipo" dinamicamente no modal
         function renderizarCampoTipo(idSala, valorAtual = '') {
-            tipoContainer.innerHTML = ''; // Limpa o container
-            
+            tipoContainer.innerHTML = ''; 
             if (idSala === 'sorvetes') {
-                // Campo <select> para Sorvetes
-                const label = document.createElement('label');
-                label.setAttribute('for', 'item-tipo');
-                label.className = 'block text-sm font-medium text-gray-700 mb-1';
-                label.textContent = 'Tipo (Obrigatório)';
-                
-                const select = document.createElement('select');
-                select.id = 'item-tipo';
-                select.required = true;
-                select.className = 'w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500';
-                
-                const opcoes = [
-                    { value: '', text: 'Selecione um tipo', disabled: true },
-                    { value: 'Recheio', text: 'Recheio' },
-                    { value: 'Pó', text: 'Pó' },
-                    { value: 'Pasta', text: 'Pasta' }
-                ];
-                
+                const label = document.createElement('label'); label.className = 'block text-sm font-medium text-gray-700 mb-1'; label.textContent = 'Tipo (Obrigatório)';
+                const select = document.createElement('select'); select.id = 'item-tipo'; select.required = true; select.className = 'w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500';
+                const opcoes = [{ value: '', text: 'Selecione um tipo', disabled: true }, { value: 'Recheio', text: 'Recheio' }, { value: 'Pó', text: 'Pó' }, { value: 'Pasta', text: 'Pasta' }];
                 opcoes.forEach(opt => {
-                    const option = document.createElement('option');
-                    option.value = opt.value;
-                    option.textContent = opt.text;
+                    const option = document.createElement('option'); option.value = opt.value; option.textContent = opt.text;
                     if (opt.disabled) option.disabled = true;
-                    if (opt.value.toLowerCase() === valorAtual.toLowerCase()) { // Comparação sem case
-                        option.selected = true;
-                    } else if (!valorAtual && opt.disabled) {
-                         option.selected = true; // Seleciona "Selecione um tipo" se não houver valor
-                    }
+                    if (valorAtual && opt.value.toLowerCase() === valorAtual.toLowerCase()) option.selected = true;
+                    else if (!valorAtual && opt.disabled) option.selected = true;
                 });
-                
-                tipoContainer.appendChild(label);
-                tipoContainer.appendChild(select);
-                
+                tipoContainer.appendChild(label); tipoContainer.appendChild(select);
             } else {
-                // Campo <input> de texto para outras salas
-                const label = document.createElement('label');
-                label.setAttribute('for', 'item-tipo');
-                label.className = 'block text-sm font-medium text-gray-700 mb-1';
-                label.textContent = 'Tipo (Opcional)';
-                
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.id = 'item-tipo';
-                input.value = valorAtual;
-                input.placeholder = 'Ex: BIOATIVO, FIBRAS...';
-                input.className = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
-                
-                tipoContainer.appendChild(label);
-                tipoContainer.appendChild(input);
+                const label = document.createElement('label'); label.className = 'block text-sm font-medium text-gray-700 mb-1'; label.textContent = 'Tipo (Opcional)';
+                const input = document.createElement('input'); input.type = 'text'; input.id = 'item-tipo'; input.value = valorAtual; input.placeholder = 'Ex: BIOATIVO...'; input.className = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
+                tipoContainer.appendChild(label); tipoContainer.appendChild(input);
             }
         }
         
-        // Calcula o nível de alerta padrão com base na unidade
         function calcularNivelAlertaPadrao(quantidade, unidade) {
-            const uni = unidade.toLowerCase().trim();
-            if (uni === 'g' || uni === 'gr') {
-                return 200; // Regra do usuário: 200g
-            } else if (uni === 'kg') {
-                return 5; // 5kg
-            } else if (uni === 'un' || uni === 'unidade' || uni === 'unidades') {
-                return 10; // 10 unidades
-            }
-            // Padrão: 10% da quantidade inicial ou 10
+            const uni = String(unidade || '').toLowerCase().trim();
+            if (uni === 'g' || uni === 'gr') return 200;
+            if (uni === 'kg') return 5;
+            if (uni === 'un' || uni === 'unidade') return 10;
             const qtNum = parseFloat(quantidade);
             return qtNum > 100 ? Math.round(qtNum * 0.1) : 10;
         }
 
-        // ---- MODAIS ----
-
-        // Abrir Modal de Adicionar/Editar
         function abrirModalItem(mode, id = null) {
-            itemForm.reset();
-            itemIdInput.value = '';
-            
+            itemForm.reset(); itemIdInput.value = '';
             if (mode === 'add') {
                 modalTitle.textContent = 'Adicionar Novo Item';
-                // Define a sala ativa no modal, se não for "boas-vindas"
-                if (salaAtiva !== 'boas-vindas') {
-                    itemSalaSelect.value = salaAtiva;
-                }
-                renderizarCampoTipo(itemSalaSelect.value); // Renderiza o campo tipo para a sala
-                
-                // Limpa o campo de alerta para que o cálculo automático funcione
-                itemAlertaInput.value = ''; 
-                
+                if (salaAtiva !== 'boas-vindas') itemSalaSelect.value = salaAtiva;
+                renderizarCampoTipo(itemSalaSelect.value); itemAlertaInput.value = ''; 
             } else if (mode === 'edit') {
                 modalTitle.textContent = 'Editar Item';
                 const item = todosOsProdutos.find(p => p.id === id);
                 if (item) {
-                    itemIdInput.value = item.id;
-                    itemSalaSelect.value = item.sala;
-                    itemCodigoInput.value = item.codigo;
-                    itemDescricaoInput.value = item.descricao;
-                    itemLoteInput.value = item.lote;
-                    itemQuantidadeInput.value = item.quantidade;
-                    itemUnidadeInput.value = item.unidade;
-                    itemAlertaInput.value = item.alerta;
-                    // Renderiza o campo tipo e preenche com o valor atual
-                    renderizarCampoTipo(item.sala, item.tipo); 
-                    itemObservacoesInput.value = item.observacoes ? item.observacoes.replace(/\\n/g, '\n') : '';
+                    itemIdInput.value = item.id; itemSalaSelect.value = item.sala; itemCodigoInput.value = item.codigo;
+                    itemDescricaoInput.value = item.descricao; itemLoteInput.value = item.lote; itemQuantidadeInput.value = item.quantidade;
+                    itemUnidadeInput.value = item.unidade; itemAlertaInput.value = item.alerta;
+                    renderizarCampoTipo(item.sala, item.tipo); itemObservacoesInput.value = item.observacoes ? String(item.observacoes).replace(/\\n/g, '\n') : '';
                 }
             }
-
-            itemModal.style.display = 'block';
-            itemModalBackdrop.style.display = 'block';
-            setTimeout(() => {
-                itemModal.style.opacity = 1;
-                itemModal.style.transform = 'translate(-50%, -50%)';
-                itemModalBackdrop.style.opacity = 1;
-            }, 10);
+            itemModal.style.display = 'block'; itemModalBackdrop.style.display = 'block';
+            setTimeout(() => { itemModal.style.opacity = 1; itemModal.style.transform = 'translate(-50%, -50%)'; itemModalBackdrop.style.opacity = 1; }, 10);
         }
 
-        // Fechar Modal de Adicionar/Editar
         function fecharModalItem() {
-            itemModal.style.opacity = 0;
-            itemModal.style.transform = 'translate(-50%, -60%)';
-            itemModalBackdrop.style.opacity = 0;
-            setTimeout(() => {
-                itemModal.style.display = 'none';
-                itemModalBackdrop.style.display = 'none';
-            }, 300);
+            itemModal.style.opacity = 0; itemModal.style.transform = 'translate(-50%, -60%)'; itemModalBackdrop.style.opacity = 0;
+            setTimeout(() => { itemModal.style.display = 'none'; itemModalBackdrop.style.display = 'none'; }, 300);
         }
         
-        // Abrir Modal de Retirada
         function abrirModalRetirada(id) {
-            const item = todosOsProdutos.find(p => p.id === id);
-            if (!item) return;
-
-            retiradaForm.reset();
-            retiradaItemIdInput.value = item.id;
-            retiradaItemNome.textContent = item.descricao;
+            const item = todosOsProdutos.find(p => p.id === id); if (!item) return;
+            retiradaForm.reset(); retiradaItemIdInput.value = item.id; retiradaItemNome.textContent = item.descricao;
             retiradaEstoqueAtual.textContent = `${item.quantidade} ${item.unidade}`;
-            
-            retiradaModal.style.display = 'block';
-            retiradaModalBackdrop.style.display = 'block';
-            setTimeout(() => {
-                retiradaModal.style.opacity = 1;
-                retiradaModal.style.transform = 'translate(-50%, -50%)';
-                retiradaModalBackdrop.style.opacity = 1;
-            }, 10);
+            retiradaModal.style.display = 'block'; retiradaModalBackdrop.style.display = 'block';
+            setTimeout(() => { retiradaModal.style.opacity = 1; retiradaModal.style.transform = 'translate(-50%, -50%)'; retiradaModalBackdrop.style.opacity = 1; }, 10);
         }
         
-        // Fechar Modal de Retirada
         function fecharModalRetirada() {
-            retiradaModal.style.opacity = 0;
-            retiradaModal.style.transform = 'translate(-50%, -60%)';
-            retiradaModalBackdrop.style.opacity = 0;
-            setTimeout(() => {
-                retiradaModal.style.display = 'none';
-                retiradaModalBackdrop.style.display = 'none';
-            }, 300);
+            retiradaModal.style.opacity = 0; retiradaModal.style.transform = 'translate(-50%, -60%)'; retiradaModalBackdrop.style.opacity = 0;
+            setTimeout(() => { retiradaModal.style.display = 'none'; retiradaModalBackdrop.style.display = 'none'; }, 300);
         }
 
-        // ---- AÇÕES (CRUD) COM FIREBASE ----
-
-        // Salvar (Adicionar ou Editar) um item
         async function salvarItem(e) {
-            e.preventDefault();
-            loadingSpinner.style.display = 'flex';
-            
-            const id = itemIdInput.value;
-            const sala = itemSalaSelect.value;
-            const tipoInput = document.getElementById('item-tipo'); // Pega o campo tipo dinâmico
-            
-            // Se o nível de alerta não foi preenchido, calcula o padrão
+            e.preventDefault(); loadingSpinner.style.display = 'flex';
+            const id = itemIdInput.value; const sala = itemSalaSelect.value; const tipoInput = document.getElementById('item-tipo');
             let nivelAlerta = parseFloat(itemAlertaInput.value);
-            if (isNaN(nivelAlerta) || nivelAlerta <= 0) {
-                nivelAlerta = calcularNivelAlertaPadrao(
-                    parseFloat(itemQuantidadeInput.value),
-                    itemUnidadeInput.value
-                );
-            }
-
+            if (isNaN(nivelAlerta) || nivelAlerta <= 0) nivelAlerta = calcularNivelAlertaPadrao(parseFloat(itemQuantidadeInput.value), itemUnidadeInput.value);
             const novoItem = {
-                sala: sala,
-                codigo: itemCodigoInput.value,
-                descricao: itemDescricaoInput.value,
-                lote: itemLoteInput.value,
-                quantidade: parseFloat(itemQuantidadeInput.value) || 0,
-                unidade: itemUnidadeInput.value,
-                alerta: nivelAlerta,
-                tipo: tipoInput ? tipoInput.value : '', // Salva o valor do campo tipo
-                observacoes: itemObservacoesInput.value.replace(/\n/g, '\\n'), // Salva quebras de linha
+                sala: sala, codigo: itemCodigoInput.value || 'Sem Código', descricao: itemDescricaoInput.value || 'Sem Descrição',
+                lote: itemLoteInput.value || '', quantidade: parseFloat(itemQuantidadeInput.value) || 0, unidade: itemUnidadeInput.value || 'un',
+                alerta: nivelAlerta, tipo: tipoInput ? tipoInput.value : '', observacoes: itemObservacoesInput.value.replace(/\n/g, '\\n'),
             };
-
             try {
-                if (id) {
-                    // --- Editar (Update) ---
-                    const docRef = doc(produtosCollectionRef, id);
-                    await updateDoc(docRef, novoItem);
-                    showToast('Item atualizado com sucesso!', 'bg-green-600');
-                } else {
-                    // --- Adicionar (Add) ---
-                    await addDoc(produtosCollectionRef, novoItem);
-                    showToast('Item adicionado com sucesso!', 'bg-green-600');
-                }
-                
+                if (id) { const docRef = doc(produtosCollectionRef, id); await updateDoc(docRef, novoItem); showToast('Item atualizado com sucesso!', 'bg-green-600'); }
+                else { await addDoc(produtosCollectionRef, novoItem); showToast('Item adicionado com sucesso!', 'bg-green-600'); }
                 fecharModalItem();
-                // Não precisa recarregar, o onSnapshot faz isso
-                
-            } catch (error) {
-                console.error("Erro ao salvar item:", error);
-                showToast('Erro ao salvar item.', 'bg-red-600');
-            } finally {
-                loadingSpinner.style.display = 'none';
-            }
+            } catch (error) { console.error("Erro ao salvar item:", error); showToast('Erro ao salvar item.', 'bg-red-600'); } finally { loadingSpinner.style.display = 'none'; }
         }
         
-        // Salvar Retirada (Dar Baixa)
         async function salvarRetirada(e) {
-            e.preventDefault();
-            loadingSpinner.style.display = 'flex';
-            
-            const id = retiradaItemIdInput.value;
-            const qtdeRetirada = parseFloat(retiradaQuantidadeInput.value);
-            const motivo = retiradaMotivoInput.value;
-            
+            e.preventDefault(); loadingSpinner.style.display = 'flex';
+            const id = retiradaItemIdInput.value; const qtdeRetirada = parseFloat(retiradaQuantidadeInput.value); const motivo = retiradaMotivoInput.value;
             const item = todosOsProdutos.find(p => p.id === id);
-            if (!item) {
-                showToast('Erro: Item não encontrado.', 'bg-red-600');
-                loadingSpinner.style.display = 'none';
-                return;
-            }
-            
-            if (isNaN(qtdeRetirada) || qtdeRetirada <= 0) {
-                showToast('Erro: Quantidade inválida.', 'bg-red-600');
-                loadingSpinner.style.display = 'none';
-                return;
-            }
-            
+            if (!item) { showToast('Erro: Item não encontrado.', 'bg-red-600'); loadingSpinner.style.display = 'none'; return; }
+            if (isNaN(qtdeRetirada) || qtdeRetirada <= 0) { showToast('Erro: Quantidade inválida.', 'bg-red-600'); loadingSpinner.style.display = 'none'; return; }
             const novaQuantidade = item.quantidade - qtdeRetirada;
-            
-            // Cria uma nota de observação para a retirada
             const dataHoje = new Date().toLocaleDateString('pt-BR');
             const notaRetirada = `[${dataHoje}] Retirada de ${qtdeRetirada} ${item.unidade}${motivo ? ': ' + motivo : ''}.`;
-            
-            // Adiciona a nova nota no topo das observações existentes
             const novasObservacoes = `${notaRetirada}\\n${item.observacoes || ''}`.replace(/\n/g, '\\n');
-            
             try {
-                const docRef = doc(produtosCollectionRef, id);
-                await updateDoc(docRef, {
-                    quantidade: novaQuantidade,
-                    observacoes: novasObservacoes
-                });
-                
-                showToast('Baixa realizada com sucesso!', 'bg-green-600');
-                fecharModalRetirada();
-                // onSnapshot recarrega
-                
-            } catch (error) {
-                console.error("Erro ao dar baixa:", error);
-                showToast('Erro ao dar baixa.', 'bg-red-600');
-            } finally {
-                loadingSpinner.style.display = 'none';
-            }
+                const docRef = doc(produtosCollectionRef, id); await updateDoc(docRef, { quantidade: novaQuantidade, observacoes: novasObservacoes });
+                showToast('Baixa realizada com sucesso!', 'bg-green-600'); fecharModalRetirada();
+            } catch (error) { console.error("Erro ao dar baixa:", error); showToast('Erro ao dar baixa.', 'bg-red-600'); } finally { loadingSpinner.style.display = 'none'; }
         }
 
-        // Excluir um item
         async function excluirItem(id) {
-            // Usamos um modal customizado em vez de confirm()
-            // NOTA: window.confirm() é bloqueado no ambiente. 
-            // Para uma versão final, o ideal seria criar um modal de confirmação.
-            // Por enquanto, usaremos o confirm() padrão do navegador.
-            if (!confirm('Tem certeza que deseja excluir este item permanentemente?')) {
-                return;
-            }
-            
+            if (!confirm('Tem certeza que deseja excluir este item permanentemente?')) return;
             loadingSpinner.style.display = 'flex';
-
-            try {
-                const docRef = doc(produtosCollectionRef, id);
-                await deleteDoc(docRef);
-                showToast('Item excluído com sucesso!', 'bg-green-600');
-                // onSnapshot recarrega
-            } catch (error) {
-                console.error("Erro ao excluir item:", error);
-                showToast('Erro ao excluir item.', 'bg-red-600');
-            } finally {
-                loadingSpinner.style.display = 'none';
-            }
+            try { const docRef = doc(produtosCollectionRef, id); await deleteDoc(docRef); showToast('Item excluído com sucesso!', 'bg-green-600'); }
+            catch (error) { console.error("Erro ao excluir item:", error); showToast('Erro ao excluir item.', 'bg-red-600'); } finally { loadingSpinner.style.display = 'none'; }
         }
         
-        // ---- UTILITÁRIOS ----
-        
-        // Mostrar notificação (toast)
         function showToast(message, bgColorClass) {
-            toast.textContent = message;
-            toast.className = bgColorClass; // Remove classes antigas
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            toast.textContent = message; toast.className = bgColorClass; toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
         
-        // Inicializa o app quando a DOM estiver pronta
         document.addEventListener('DOMContentLoaded', initApp);
-
     </script>
 </body>
 </html>
+
 
