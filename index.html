@@ -29,7 +29,6 @@
             getAuth, signInAnonymously, onAuthStateChanged 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // Configuração do Firebase do usuário
         const firebaseConfig = {
             apiKey: "AIzaSyAqgHANmbw0wbvuTB8PrEIkvrUQhyh41Tk",
             authDomain: "controleprodutossalas.firebaseapp.com",
@@ -86,23 +85,87 @@
         }
         #toast.show { bottom: 2rem; }
 
-        /* Timeline do Histórico */
+        /* Estilos da Timeline do Histórico */
+        .timeline-container {
+            border-left: 2px solid #e5e7eb;
+            margin-left: 1rem;
+            padding-bottom: 1rem;
+        }
+        
         .timeline-item {
             position: relative;
             padding-left: 2rem;
-            padding-bottom: 1.5rem;
-            border-left: 2px solid #e5e7eb;
+            margin-bottom: 1.5rem;
         }
-        .timeline-item:last-child { border-left: none; }
-        .timeline-icon {
+
+        .timeline-icon-wrapper {
             position: absolute;
-            left: -0.56rem; /* Ajuste para centralizar na linha */
+            left: -1rem; /* Centraliza na linha */
             top: 0;
-            width: 1rem;
-            height: 1rem;
+            background-color: white;
+            padding: 2px;
             border-radius: 50%;
-            background-color: #3b82f6;
-            border: 2px solid white;
+        }
+        
+        .timeline-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .timeline-content {
+            background-color: #f9fafb;
+            border: 1px solid #f3f4f6;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+        }
+        
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-date {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .timeline-user-tag {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            background-color: #e0e7ff;
+            color: #4338ca;
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 0.025em;
+        }
+
+        .timeline-text {
+            font-size: 0.875rem;
+            color: #374151;
+            line-height: 1.4;
+        }
+        
+        /* Scrollbar fina para o modal de histórico */
+        #history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        #history-list::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        #history-list::-webkit-scrollbar-thumb {
+            background: #d1d5db; 
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -146,7 +209,7 @@
                         <h3 class="font-bold text-blue-800 text-lg mb-2">Instruções Importantes</h3>
                         <ul class="list-disc list-inside mt-2 text-blue-700 space-y-1">
                             <li><strong class="font-semibold">Sempre dê baixa</strong> usando o botão de retirada quando um produto sair.</li>
-                            <li><strong class="font-semibold">Clique no produto</strong> para ver o histórico de retiradas e movimentações.</li>
+                            <li><strong class="font-semibold">Clique no produto</strong> para ver o histórico de retiradas com ícones dos responsáveis.</li>
                         </ul>
                     </div>
                 </div>
@@ -160,21 +223,20 @@
         </div>
     </div>
 
-    <!-- Modal de Histórico (NOVO) -->
+    <!-- Modal de Histórico (ATUALIZADO) -->
     <div id="history-modal-backdrop" class="modal-backdrop"></div>
     <div id="history-modal" class="modal bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
         <div class="flex justify-between items-center p-4 border-b bg-gray-50">
             <h3 class="text-xl font-bold text-gray-800 flex items-center">
-                <i class="fas fa-history mr-2 text-blue-600"></i> Histórico
+                <i class="fas fa-history mr-2 text-blue-600"></i> Histórico de Movimentação
             </h3>
             <button type="button" class="modal-close-btn text-gray-400 hover:text-gray-600"><i class="fas fa-times fa-lg"></i></button>
         </div>
-        <div class="p-6 overflow-y-auto flex-1">
-            <h4 id="history-item-name" class="text-lg font-bold text-gray-700 mb-1"></h4>
-            <p class="text-sm text-gray-500 mb-4">Movimentações recentes:</p>
+        <div class="p-6 overflow-y-auto flex-1" id="history-content-wrapper">
+            <h4 id="history-item-name" class="text-lg font-bold text-gray-800 mb-4 border-b pb-2"></h4>
             
             <!-- Container da Timeline -->
-            <div id="history-list" class="mt-2">
+            <div class="timeline-container" id="history-list">
                 <!-- Itens da timeline inseridos via JS -->
             </div>
         </div>
@@ -224,12 +286,9 @@
                     </div>
                 </div>
                 <div id="tipo-container"></div>
-                
-                <!-- Observações (agora usado como log) -->
                 <div>
                     <label for="item-observacoes" class="block text-sm font-medium text-gray-700 mb-1">Histórico / Notas</label>
                     <textarea id="item-observacoes" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-sm text-gray-600" placeholder="Registros manuais..."></textarea>
-                    <p class="text-xs text-gray-400 mt-1">O sistema adiciona retiradas aqui automaticamente.</p>
                 </div>
             </div>
             <div class="flex justify-end items-center p-6 border-t bg-gray-50 rounded-b-xl space-x-4">
@@ -258,8 +317,9 @@
                     <input type="number" step="any" id="retirada-quantidade" required placeholder="Ex: 100" class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label for="retirada-motivo" class="block text-sm font-medium text-gray-700 mb-1">Motivo (Opcional)</label>
-                    <input type="text" id="retirada-motivo" placeholder="Ex: Retirado por..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <!-- CAMPO ALTERADO: Pede o nome do responsável -->
+                    <label for="retirada-motivo" class="block text-sm font-medium text-gray-700 mb-1">Nome do Responsável / Motivo</label>
+                    <input type="text" id="retirada-motivo" placeholder="Ex: Ana Silva" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
             <div class="flex justify-end items-center p-6 border-t bg-gray-50 rounded-b-xl space-x-4">
@@ -277,6 +337,33 @@
         const appId = 'controle-produtos-salas-v1';
         let userId = null, produtosCollectionRef;
 
+        // Lista de Ícones Fofinhos para o Histórico
+        const cuteIcons = [
+            { icon: 'fa-cat', color: 'bg-pink-400' },
+            { icon: 'fa-dog', color: 'bg-yellow-500' },
+            { icon: 'fa-dragon', color: 'bg-red-500' },
+            { icon: 'fa-otter', color: 'bg-blue-400' },
+            { icon: 'fa-frog', color: 'bg-green-500' },
+            { icon: 'fa-hippo', color: 'bg-purple-500' },
+            { icon: 'fa-fish', color: 'bg-indigo-400' },
+            { icon: 'fa-spider', color: 'bg-gray-600' },
+            { icon: 'fa-robot', color: 'bg-blue-600' },
+            { icon: 'fa-ghost', color: 'bg-gray-400' },
+            { icon: 'fa-user-astronaut', color: 'bg-orange-400' },
+            { icon: 'fa-dove', color: 'bg-teal-400' }
+        ];
+
+        // Função para pegar um ícone aleatório baseado no nome (hash simples)
+        function getIconForUser(name) {
+            if (!name) return cuteIcons[8]; // Robot default
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const index = Math.abs(hash) % cuteIcons.length;
+            return cuteIcons[index];
+        }
+
         const salas = [
             { id: 'aromas-doces', nome: 'Aromas Doces', icon: 'fa-cookie-bite', color: 'text-pink-400' },
             { id: 'aromas-salgados', nome: 'Aromas Salgados', icon: 'fa-drumstick-bite', color: 'text-yellow-600' },
@@ -286,7 +373,7 @@
             { id: 'sorvetes', nome: 'Sorvetes', icon: 'fa-ice-cream', color: 'text-purple-400' },
         ];
         
-        // Dados Iniciais (para popular se vazio)
+        // DADOS INICIAIS DE NUTRACÊUTICOS (MANTIDOS)
         const dadosIniciaisNutraceuticos = [
             { tipo: "BIOATIVO", codigo: "PQ993", descricao: "DHA Algas em pó", lote: "", quantidade: 300, unidade: "g" },
             { tipo: "BIOATIVO", codigo: "PQ605", descricao: "Glucoronolactona", lote: "5226/23", quantidade: 396.67, unidade: "g" },
@@ -314,6 +401,7 @@
             { tipo: "MINERAIS", codigo: "PQ704", descricao: "Bisglicinato de cobre", lote: "2527/25", quantidade: 400, unidade: "g" }
         ];
 
+        // DADOS DE SORVETE (MANTIDOS)
         const dadosIniciaisSorvetes = [
             {codigo: "2152", descricao: "AROMA ID NATURAL GUARANA GUA002 (1X4KG)", quantidade: 3.103, lote: "03031476/0425", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "4879", descricao: "BRIGADEIRO CREAM (6X4KG)", quantidade: 3.318, lote: "03030355/0525", tipo: "RECHEIO", unidade: "kg"},
@@ -485,7 +573,7 @@
             {codigo: "4892", descricao: "TRUFA ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "0303117/0225", tipo: "RECHEIO", unidade: "kg"}
         ];
 
-        // LISTA DE LÁCTEOS
+        // LISTA DE LÁCTEOS (MANTIDOS)
         const dadosIniciaisLacteos = [
             { codigo: "PQ976", descricao: "CASEINATO DE SODIO", quantidade: 3.1, lote: "5412/24", tipo: "", unidade: "kg" },
             { codigo: "PQ926", descricao: "POLISORBATO 80 (INS 433) - PO", quantidade: 0.108, lote: "4158/2025", tipo: "", unidade: "kg" },
@@ -587,7 +675,6 @@
         const retiradaQuantidadeInput = document.getElementById('retirada-quantidade');
         const retiradaMotivoInput = document.getElementById('retirada-motivo');
 
-        // Elementos do Modal de Histórico
         const historyModalBackdrop = document.getElementById('history-modal-backdrop');
         const historyModal = document.getElementById('history-modal');
         const historyList = document.getElementById('history-list');
@@ -822,7 +909,6 @@
 
             card.className = `bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl ring-2 ring-transparent hover:${statusRing}`;
             
-            // Make the card body clickable to open history
             card.innerHTML = `
                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                     <span class="px-3 py-1 text-xs font-bold ${statusBg} ${statusText} rounded-full">${status}</span>
@@ -851,14 +937,8 @@
                 </div>
             `;
             
-            // Click on body opens history
             card.querySelector('.p-5').addEventListener('click', () => abrirModalHistorico(item.id));
-            // Click on icon opens history
-            card.querySelector('.btn-historico').addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevents double triggering if nested
-                abrirModalHistorico(item.id);
-            });
-
+            card.querySelector('.btn-historico').addEventListener('click', (e) => { e.stopPropagation(); abrirModalHistorico(item.id); });
             card.querySelector('.btn-retirada').addEventListener('click', () => abrirModalRetirada(item.id));
             card.querySelector('.btn-editar').addEventListener('click', () => abrirModalItem('edit', item.id));
             card.querySelector('.btn-excluir').addEventListener('click', () => excluirItem(item.id));
@@ -958,30 +1038,62 @@
             setTimeout(() => { retiradaModal.style.display = 'none'; retiradaModalBackdrop.style.display = 'none'; }, 300);
         }
 
-        // NOVA FUNÇÃO: Abrir Histórico
+        // ---- FUNÇÕES DE HISTÓRICO (ATUALIZADAS COM ÍCONES) ----
         function abrirModalHistorico(id) {
             const item = todosOsProdutos.find(p => p.id === id); if (!item) return;
             historyItemName.textContent = item.descricao;
             historyList.innerHTML = '';
 
             if (!item.observacoes) {
-                historyList.innerHTML = '<p class="text-gray-400 text-center italic">Nenhum histórico disponível.</p>';
+                historyList.innerHTML = '<p class="text-gray-400 text-center italic py-4">Nenhum histórico disponível.</p>';
             } else {
-                // Quebra as observações por nova linha e cria a lista
                 const linhas = item.observacoes.split('\\n');
                 linhas.forEach(linha => {
                     if (!linha.trim()) return;
+                    
+                    // Tenta extrair data, texto e responsável
+                    let datePart = '';
+                    let contentPart = linha;
+                    let userPart = '';
+
+                    // Regex para data [DD/MM/YYYY]
+                    const dateMatch = linha.match(/^\[(\d{2}\/\d{2}\/\d{4})\]/);
+                    if (dateMatch) {
+                        datePart = dateMatch[1];
+                        contentPart = linha.substring(dateMatch[0].length).trim();
+                    }
+
+                    // Regex para achar Responsável ou Motivo com nome
+                    // Procura por "Por: Nome", "Responsável: Nome", ou padrões simples
+                    const userMatch = contentPart.match(/(?:Por|Responsável|Resp\.?):\s*([A-Za-zÀ-ÿ0-9\s]+?)(?:\.|$)/i);
+                    if (userMatch) {
+                         userPart = userMatch[1].trim();
+                         // Remove a parte do responsável do texto principal para não duplicar visualmente, se desejar, ou mantém
+                    }
+                    
+                    const iconData = getIconForUser(userPart || 'Sistema'); // Se não tiver user, usa ícone padrão
+
                     const div = document.createElement('div');
                     div.className = 'timeline-item';
                     div.innerHTML = `
-                        <div class="timeline-icon"></div>
-                        <p class="text-gray-800 text-sm">${linha}</p>
+                        <div class="timeline-icon-wrapper">
+                            <div class="timeline-icon ${iconData.color}">
+                                <i class="fas ${iconData.icon}"></i>
+                            </div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-date">${datePart || 'Data desconhecida'}</span>
+                                ${userPart ? `<span class="timeline-user-tag">${userPart}</span>` : ''}
+                            </div>
+                            <p class="timeline-text">${contentPart}</p>
+                        </div>
                     `;
                     historyList.appendChild(div);
                 });
             }
 
-            historyModal.style.display = 'flex'; // Flex para centralizar
+            historyModal.style.display = 'flex'; 
             historyModalBackdrop.style.display = 'block';
             setTimeout(() => { historyModal.style.opacity = 1; historyModal.style.transform = 'translate(-50%, -50%)'; historyModalBackdrop.style.opacity = 1; }, 10);
         }
@@ -996,10 +1108,18 @@
             const id = itemIdInput.value; const sala = itemSalaSelect.value; const tipoInput = document.getElementById('item-tipo');
             let nivelAlerta = parseFloat(itemAlertaInput.value);
             if (isNaN(nivelAlerta) || nivelAlerta <= 0) nivelAlerta = calcularNivelAlertaPadrao(parseFloat(itemQuantidadeInput.value), itemUnidadeInput.value);
+            
+            // Adiciona log de criação/edição se for novo
+            let obsAtual = itemObservacoesInput.value;
+            if (!id) {
+                 const dataHoje = new Date().toLocaleDateString('pt-BR');
+                 obsAtual = `[${dataHoje}] Item criado no sistema.\\n` + obsAtual;
+            }
+
             const novoItem = {
                 sala: sala, codigo: itemCodigoInput.value || 'Sem Código', descricao: itemDescricaoInput.value || 'Sem Descrição',
                 lote: itemLoteInput.value || '', quantidade: parseFloat(itemQuantidadeInput.value) || 0, unidade: itemUnidadeInput.value || 'un',
-                alerta: nivelAlerta, tipo: tipoInput ? tipoInput.value : '', observacoes: itemObservacoesInput.value.replace(/\n/g, '\\n'),
+                alerta: nivelAlerta, tipo: tipoInput ? tipoInput.value : '', observacoes: obsAtual.replace(/\n/g, '\\n'),
             };
             try {
                 if (id) { const docRef = doc(produtosCollectionRef, id); await updateDoc(docRef, novoItem); showToast('Item atualizado com sucesso!', 'bg-green-600'); }
@@ -1010,13 +1130,26 @@
         
         async function salvarRetirada(e) {
             e.preventDefault(); loadingSpinner.style.display = 'flex';
-            const id = retiradaItemIdInput.value; const qtdeRetirada = parseFloat(retiradaQuantidadeInput.value); const motivo = retiradaMotivoInput.value;
+            const id = retiradaItemIdInput.value; const qtdeRetirada = parseFloat(retiradaQuantidadeInput.value); 
+            
+            // Captura o responsável/motivo
+            const responsavelMotivo = retiradaMotivoInput.value;
+            
             const item = todosOsProdutos.find(p => p.id === id);
             if (!item) { showToast('Erro: Item não encontrado.', 'bg-red-600'); loadingSpinner.style.display = 'none'; return; }
             if (isNaN(qtdeRetirada) || qtdeRetirada <= 0) { showToast('Erro: Quantidade inválida.', 'bg-red-600'); loadingSpinner.style.display = 'none'; return; }
+            
             const novaQuantidade = item.quantidade - qtdeRetirada;
             const dataHoje = new Date().toLocaleDateString('pt-BR');
-            const notaRetirada = `[${dataHoje}] Retirada de ${qtdeRetirada} ${item.unidade}${motivo ? ': ' + motivo : ''}`;
+            
+            // Formata a string de histórico para incluir o responsável explicitamente se houver
+            let notaRetirada = `[${dataHoje}] Retirada de ${qtdeRetirada} ${item.unidade}`;
+            if (responsavelMotivo) {
+                notaRetirada += `. Por: ${responsavelMotivo}`;
+            } else {
+                notaRetirada += `.`;
+            }
+
             const novasObservacoes = `${notaRetirada}\\n${item.observacoes || ''}`.replace(/\n/g, '\\n');
             try {
                 const docRef = doc(produtosCollectionRef, id); await updateDoc(docRef, { quantidade: novaQuantidade, observacoes: novasObservacoes });
