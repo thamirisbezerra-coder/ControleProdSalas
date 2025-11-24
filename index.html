@@ -67,6 +67,8 @@
         body { font-family: 'Inter', sans-serif; }
         #sidebar { transition: transform 0.3s ease-in-out; }
         #main-content { transition: margin-left 0.3s ease-in-out; }
+        
+        /* Modais */
         .modal-backdrop {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.5); z-index: 40; opacity: 0; transition: opacity 0.3s ease;
@@ -75,21 +77,33 @@
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             z-index: 50; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease;
         }
+        
+        /* Toast */
         #toast {
             position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
             padding: 1rem 1.5rem; border-radius: 0.5rem; color: white; font-weight: 600;
             z-index: 100; transition: bottom 0.5s ease-in-out;
         }
         #toast.show { bottom: 2rem; }
-        [data-tooltip] { position: relative; cursor: pointer; }
-        [data-tooltip]:before {
-            content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%;
-            transform: translateX(-50%) translateY(-8px); background-color: #333; color: #fff;
-            padding: 6px 10px; border-radius: 6px; font-size: 0.875rem; white-space: pre-wrap;
-            width: max-content; max-width: 300px; opacity: 0; visibility: hidden;
-            transition: opacity 0.2s, visibility 0.2s; z-index: 10;
+
+        /* Timeline do Histórico */
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            padding-bottom: 1.5rem;
+            border-left: 2px solid #e5e7eb;
         }
-        [data-tooltip]:hover:before { opacity: 1; visibility: visible; }
+        .timeline-item:last-child { border-left: none; }
+        .timeline-icon {
+            position: absolute;
+            left: -0.56rem; /* Ajuste para centralizar na linha */
+            top: 0;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            border: 2px solid white;
+        }
     </style>
 </head>
 
@@ -132,7 +146,7 @@
                         <h3 class="font-bold text-blue-800 text-lg mb-2">Instruções Importantes</h3>
                         <ul class="list-disc list-inside mt-2 text-blue-700 space-y-1">
                             <li><strong class="font-semibold">Sempre dê baixa</strong> usando o botão de retirada quando um produto sair.</li>
-                            <li><strong class="font-semibold">Sempre adicione</strong> um novo item ou edite a quantidade quando um produto entrar.</li>
+                            <li><strong class="font-semibold">Clique no produto</strong> para ver o histórico de retiradas e movimentações.</li>
                         </ul>
                     </div>
                 </div>
@@ -146,7 +160,30 @@
         </div>
     </div>
 
-    <!-- Modais e Toasts -->
+    <!-- Modal de Histórico (NOVO) -->
+    <div id="history-modal-backdrop" class="modal-backdrop"></div>
+    <div id="history-modal" class="modal bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+        <div class="flex justify-between items-center p-4 border-b bg-gray-50">
+            <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-history mr-2 text-blue-600"></i> Histórico
+            </h3>
+            <button type="button" class="modal-close-btn text-gray-400 hover:text-gray-600"><i class="fas fa-times fa-lg"></i></button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-1">
+            <h4 id="history-item-name" class="text-lg font-bold text-gray-700 mb-1"></h4>
+            <p class="text-sm text-gray-500 mb-4">Movimentações recentes:</p>
+            
+            <!-- Container da Timeline -->
+            <div id="history-list" class="mt-2">
+                <!-- Itens da timeline inseridos via JS -->
+            </div>
+        </div>
+        <div class="p-4 border-t bg-gray-50 text-right">
+            <button type="button" class="modal-close-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Modal de Adicionar/Editar Item -->
     <div id="item-modal-backdrop" class="modal-backdrop"></div>
     <div id="item-modal" class="modal bg-white w-full max-w-lg rounded-xl shadow-2xl">
         <form id="item-form" class="flex flex-col">
@@ -187,9 +224,12 @@
                     </div>
                 </div>
                 <div id="tipo-container"></div>
+                
+                <!-- Observações (agora usado como log) -->
                 <div>
-                    <label for="item-observacoes" class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
-                    <textarea id="item-observacoes" rows="3" placeholder="Adicione uma nota..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                    <label for="item-observacoes" class="block text-sm font-medium text-gray-700 mb-1">Histórico / Notas</label>
+                    <textarea id="item-observacoes" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-sm text-gray-600" placeholder="Registros manuais..."></textarea>
+                    <p class="text-xs text-gray-400 mt-1">O sistema adiciona retiradas aqui automaticamente.</p>
                 </div>
             </div>
             <div class="flex justify-end items-center p-6 border-t bg-gray-50 rounded-b-xl space-x-4">
@@ -246,7 +286,7 @@
             { id: 'sorvetes', nome: 'Sorvetes', icon: 'fa-ice-cream', color: 'text-purple-400' },
         ];
         
-        // Dados de Nutracêuticos (mantidos)
+        // Dados Iniciais (para popular se vazio)
         const dadosIniciaisNutraceuticos = [
             { tipo: "BIOATIVO", codigo: "PQ993", descricao: "DHA Algas em pó", lote: "", quantidade: 300, unidade: "g" },
             { tipo: "BIOATIVO", codigo: "PQ605", descricao: "Glucoronolactona", lote: "5226/23", quantidade: 396.67, unidade: "g" },
@@ -274,7 +314,6 @@
             { tipo: "MINERAIS", codigo: "PQ704", descricao: "Bisglicinato de cobre", lote: "2527/25", quantidade: 400, unidade: "g" }
         ];
 
-        // Dados de Sorvetes (LISTA ANTIGA E INCOMPLETA)
         const dadosIniciaisSorvetes = [
             {codigo: "2152", descricao: "AROMA ID NATURAL GUARANA GUA002 (1X4KG)", quantidade: 3.103, lote: "03031476/0425", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "4879", descricao: "BRIGADEIRO CREAM (6X4KG)", quantidade: 3.318, lote: "03030355/0525", tipo: "RECHEIO", unidade: "kg"},
@@ -292,7 +331,7 @@
             {codigo: "4888", descricao: "CHOCOCREMA", quantidade: 1.97, lote: "03031527/0225", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "5618", descricao: "CHOCOSKIMO AO LEITE ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031448/0725", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "5618", descricao: "CHOCOSKIMO AO LEITE ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031448/0725", tipo: "RECHEIO", unidade: "kg"},
-            {codigo: "4880", descricao: "CHOCOSKIMO BRANCO (6X4KG)", quantidade: 1.021, lote: "03031768/0325", tipo: "RECHEIO", unidade: "kg"},
+            {codigo: "4880", descricao: "CHOCOSKIMO BRANCO (6X4KG)", quantidade: 1.021, lote: "03031768/0325", tipo: 'RECHEIO', unidade: "kg"},
             {codigo: "5617", descricao: "CHOCOSKIMO BRANCO ESSENCIAL (6X4KG)", quantidade: 0.292, lote: "03031768/0325", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "5617", descricao: "CHOCOSKIMO BRANCO ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031768/0325", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "5617", descricao: "CHOCOSKIMO BRANCO ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031768/0325", tipo: "RECHEIO", unidade: "kg"},
@@ -548,6 +587,12 @@
         const retiradaQuantidadeInput = document.getElementById('retirada-quantidade');
         const retiradaMotivoInput = document.getElementById('retirada-motivo');
 
+        // Elementos do Modal de Histórico
+        const historyModalBackdrop = document.getElementById('history-modal-backdrop');
+        const historyModal = document.getElementById('history-modal');
+        const historyList = document.getElementById('history-list');
+        const historyItemName = document.getElementById('history-item-name');
+
         const toast = document.getElementById('toast');
 
         async function initApp() {
@@ -592,14 +637,12 @@
                 console.log("Dados recebidos do Firestore. Documentos:", snapshot.size);
                 todosOsProdutos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                // LÓGICA DE MIGRAÇÃO DE DADOS
                 if (snapshot.empty) {
                     console.log("Banco de dados vazio. Populando com dados iniciais...");
                     await popularDadosIniciaisCompletos(); 
                     return; 
                 }
 
-                // Migração de Sorvetes (se não tiver a nova lista)
                 const migracaoSorveteFeita = todosOsProdutos.some(p => p.codigo === 'DSO1022');
                 const temSorveteAntigo = todosOsProdutos.some(p => p.codigo === '5310' && p.quantidade === 3.602);
                 if (!migracaoSorveteFeita && temSorveteAntigo) {
@@ -609,8 +652,6 @@
                     return; 
                 }
 
-                // Migração de Lácteos (se a lista de lácteos estiver vazia ou antiga)
-                // Verifica se existe algum produto de lácteo. Se não existir (e o banco não estiver vazio), adiciona.
                 const temLacteos = todosOsProdutos.some(p => p.sala === 'lacteos');
                 if (!temLacteos) {
                     console.log("Lista de lácteos não encontrada. Adicionando...");
@@ -620,7 +661,6 @@
                     return;
                 }
 
-                // Verificação de Sorvetes deletados (caso tenha sido limpo)
                 const temSorvete = todosOsProdutos.some(p => p.sala === 'sorvetes');
                 if (!temSorvete && !snapshot.empty) {
                      console.log("Sem sorvetes no banco. Adicionando...");
@@ -666,7 +706,6 @@
             console.log("Iniciando migração dos dados de Lácteos...");
             const batch = writeBatch(db);
             
-            // Remove antigos se houver (para garantir limpeza)
             const produtosLacteosAntigos = todosOsProdutos.filter(p => p.sala === 'lacteos');
             produtosLacteosAntigos.forEach(item => {
                 const docRef = doc(produtosCollectionRef, item.id);
@@ -782,19 +821,19 @@
             }
 
             card.className = `bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl ring-2 ring-transparent hover:${statusRing}`;
-            const obsFormatada = item.observacoes ? String(item.observacoes).replace(/\\n/g, '\n') : 'Sem observações';
-
+            
+            // Make the card body clickable to open history
             card.innerHTML = `
                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                     <span class="px-3 py-1 text-xs font-bold ${statusBg} ${statusText} rounded-full">${status}</span>
-                    ${item.observacoes ? `<i class="fas fa-info-circle text-blue-400" data-tooltip="${obsFormatada}"></i>` : ''}
+                    <button class="text-blue-400 hover:text-blue-600 btn-historico" title="Ver Histórico"><i class="fas fa-history"></i></button>
                 </div>
-                <div class="p-5 flex-1">
+                <div class="p-5 flex-1 cursor-pointer hover:bg-gray-50 transition-colors" title="Clique para ver o histórico">
                     <div class="mb-3">
                         <p class="text-xs font-semibold text-blue-600 tracking-wide uppercase">CÓDIGO</p>
                         <h3 class="text-2xl font-bold text-gray-900">${item.codigo || 'Sem Código'}</h3>
                     </div>
-                    <p class="text-gray-700 font-medium mb-3 h-12">${item.descricao || 'Sem Descrição'}</p>
+                    <p class="text-gray-700 font-medium mb-3 h-12 overflow-hidden">${item.descricao || 'Sem Descrição'}</p>
                     <div class="grid grid-cols-2 gap-3 text-sm">
                         <div><p class="text-gray-500">Lote</p><p class="font-semibold text-gray-800">${item.lote || '--'}</p></div>
                         <div><p class="text-gray-500">Tipo</p><p class="font-semibold text-gray-800">${item.tipo || '--'}</p></div>
@@ -811,6 +850,15 @@
                     <button class="btn-excluir px-4 py-3 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-red-600 transition-colors border-l" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button>
                 </div>
             `;
+            
+            // Click on body opens history
+            card.querySelector('.p-5').addEventListener('click', () => abrirModalHistorico(item.id));
+            // Click on icon opens history
+            card.querySelector('.btn-historico').addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevents double triggering if nested
+                abrirModalHistorico(item.id);
+            });
+
             card.querySelector('.btn-retirada').addEventListener('click', () => abrirModalRetirada(item.id));
             card.querySelector('.btn-editar').addEventListener('click', () => abrirModalItem('edit', item.id));
             card.querySelector('.btn-excluir').addEventListener('click', () => excluirItem(item.id));
@@ -821,7 +869,7 @@
             menuToggleBtn.addEventListener('click', () => { sidebarAberta = !sidebarAberta; updateLayout(); });
             addItemBtn.addEventListener('click', () => abrirModalItem('add'));
             document.querySelectorAll('.modal-close-btn, .modal-backdrop').forEach(btn => {
-                btn.addEventListener('click', () => { fecharModalItem(); fecharModalRetirada(); });
+                btn.addEventListener('click', () => { fecharModalItem(); fecharModalRetirada(); fecharModalHistorico(); });
             });
             itemForm.addEventListener('submit', salvarItem);
             retiradaForm.addEventListener('submit', salvarRetirada);
@@ -910,6 +958,39 @@
             setTimeout(() => { retiradaModal.style.display = 'none'; retiradaModalBackdrop.style.display = 'none'; }, 300);
         }
 
+        // NOVA FUNÇÃO: Abrir Histórico
+        function abrirModalHistorico(id) {
+            const item = todosOsProdutos.find(p => p.id === id); if (!item) return;
+            historyItemName.textContent = item.descricao;
+            historyList.innerHTML = '';
+
+            if (!item.observacoes) {
+                historyList.innerHTML = '<p class="text-gray-400 text-center italic">Nenhum histórico disponível.</p>';
+            } else {
+                // Quebra as observações por nova linha e cria a lista
+                const linhas = item.observacoes.split('\\n');
+                linhas.forEach(linha => {
+                    if (!linha.trim()) return;
+                    const div = document.createElement('div');
+                    div.className = 'timeline-item';
+                    div.innerHTML = `
+                        <div class="timeline-icon"></div>
+                        <p class="text-gray-800 text-sm">${linha}</p>
+                    `;
+                    historyList.appendChild(div);
+                });
+            }
+
+            historyModal.style.display = 'flex'; // Flex para centralizar
+            historyModalBackdrop.style.display = 'block';
+            setTimeout(() => { historyModal.style.opacity = 1; historyModal.style.transform = 'translate(-50%, -50%)'; historyModalBackdrop.style.opacity = 1; }, 10);
+        }
+
+        function fecharModalHistorico() {
+            historyModal.style.opacity = 0; historyModal.style.transform = 'translate(-50%, -60%)'; historyModalBackdrop.style.opacity = 0;
+            setTimeout(() => { historyModal.style.display = 'none'; historyModalBackdrop.style.display = 'none'; }, 300);
+        }
+
         async function salvarItem(e) {
             e.preventDefault(); loadingSpinner.style.display = 'flex';
             const id = itemIdInput.value; const sala = itemSalaSelect.value; const tipoInput = document.getElementById('item-tipo');
@@ -935,7 +1016,7 @@
             if (isNaN(qtdeRetirada) || qtdeRetirada <= 0) { showToast('Erro: Quantidade inválida.', 'bg-red-600'); loadingSpinner.style.display = 'none'; return; }
             const novaQuantidade = item.quantidade - qtdeRetirada;
             const dataHoje = new Date().toLocaleDateString('pt-BR');
-            const notaRetirada = `[${dataHoje}] Retirada de ${qtdeRetirada} ${item.unidade}${motivo ? ': ' + motivo : ''}.`;
+            const notaRetirada = `[${dataHoje}] Retirada de ${qtdeRetirada} ${item.unidade}${motivo ? ': ' + motivo : ''}`;
             const novasObservacoes = `${notaRetirada}\\n${item.observacoes || ''}`.replace(/\n/g, '\\n');
             try {
                 const docRef = doc(produtosCollectionRef, id); await updateDoc(docRef, { quantidade: novaQuantidade, observacoes: novasObservacoes });
@@ -959,5 +1040,6 @@
     </script>
 </body>
 </html>
+
 
 
