@@ -246,6 +246,7 @@
             { id: 'sorvetes', nome: 'Sorvetes', icon: 'fa-ice-cream', color: 'text-purple-400' },
         ];
         
+        // Dados de Nutracêuticos (mantidos)
         const dadosIniciaisNutraceuticos = [
             { tipo: "BIOATIVO", codigo: "PQ993", descricao: "DHA Algas em pó", lote: "", quantidade: 300, unidade: "g" },
             { tipo: "BIOATIVO", codigo: "PQ605", descricao: "Glucoronolactona", lote: "5226/23", quantidade: 396.67, unidade: "g" },
@@ -273,7 +274,7 @@
             { tipo: "MINERAIS", codigo: "PQ704", descricao: "Bisglicinato de cobre", lote: "2527/25", quantidade: 400, unidade: "g" }
         ];
 
-        // LISTA COMPLETA DE SORVETES ORDENADA ALFABETICAMENTE PELA DESCRIÇÃO
+        // Dados de Sorvetes (LISTA ANTIGA E INCOMPLETA)
         const dadosIniciaisSorvetes = [
             {codigo: "2152", descricao: "AROMA ID NATURAL GUARANA GUA002 (1X4KG)", quantidade: 3.103, lote: "03031476/0425", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "4879", descricao: "BRIGADEIRO CREAM (6X4KG)", quantidade: 3.318, lote: "03030355/0525", tipo: "RECHEIO", unidade: "kg"},
@@ -291,7 +292,7 @@
             {codigo: "4888", descricao: "CHOCOCREMA", quantidade: 1.97, lote: "03031527/0225", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "5618", descricao: "CHOCOSKIMO AO LEITE ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031448/0725", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "5618", descricao: "CHOCOSKIMO AO LEITE ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031448/0725", tipo: "RECHEIO", unidade: "kg"},
-            {codigo: "4880", descricao: "CHOCOSKIMO BRANCO (6X4KG)", quantidade: 1.021, lote: "03031768/0325", tipo: 'RECHEIO', unidade: "kg"},
+            {codigo: "4880", descricao: "CHOCOSKIMO BRANCO (6X4KG)", quantidade: 1.021, lote: "03031768/0325", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "5617", descricao: "CHOCOSKIMO BRANCO ESSENCIAL (6X4KG)", quantidade: 0.292, lote: "03031768/0325", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "5617", descricao: "CHOCOSKIMO BRANCO ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031768/0325", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "5617", descricao: "CHOCOSKIMO BRANCO ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "03031768/0325", tipo: "RECHEIO", unidade: "kg"},
@@ -444,6 +445,67 @@
             {codigo: "4892", descricao: "TRUFA ESSENCIAL (6X4KG)", quantidade: 3.403, lote: "03031984/0225", tipo: "RECHEIO", unidade: "kg"},
             {codigo: "4892", descricao: "TRUFA ESSENCIAL (6X4KG)", quantidade: 0.2, lote: "0303117/0225", tipo: "RECHEIO", unidade: "kg"}
         ];
+
+        // LISTA DE LÁCTEOS
+        const dadosIniciaisLacteos = [
+            { codigo: "PQ976", descricao: "CASEINATO DE SODIO", quantidade: 3.1, lote: "5412/24", tipo: "", unidade: "kg" },
+            { codigo: "PQ926", descricao: "POLISORBATO 80 (INS 433) - PO", quantidade: 0.108, lote: "4158/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ657", descricao: "CITRATO TRICALCICO (INS 333iii) - TETRAHIDRATADO", quantidade: 0.094, lote: "1906/2023", tipo: "", unidade: "kg" },
+            { codigo: "PQ559", descricao: "PECTINAS (INS 440)", quantidade: 0.087, lote: "2648/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ266", descricao: "AMIDO DE MILHO REGULAR", quantidade: 0.09, lote: "0337/2025", tipo: "", unidade: "kg" },
+            { codigo: "MD1109", descricao: "CARRAGENA", quantidade: 0.211, lote: "03030930/0825", tipo: "", unidade: "kg" },
+            { codigo: "PQ162", descricao: "SAL MICRONIZADO", quantidade: 0.05, lote: "0052/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ1569", descricao: "MONOESTEARATO DE SORBITANA (INS 491)", quantidade: 0.088, lote: "AMOSTRA", tipo: "", unidade: "kg" },
+            { codigo: "PQ1847", descricao: "PROTEINA WPI", quantidade: 0.113, lote: "0034/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ1537", descricao: "BUTIRATO HEXILA", quantidade: 0.25, lote: "2483/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ1529", descricao: "INOSITOL", quantidade: 0.099, lote: "4551/24", tipo: "", unidade: "kg" },
+            { codigo: "4817", descricao: "DOREGEL EXTRUDED 4817 (1X25KG)", quantidade: 0.197, lote: "L056/1025", tipo: "", unidade: "kg" },
+            { codigo: "PQ265", descricao: "DEXTROSE ANIDRA", quantidade: 0.85, lote: "0503/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ1576", descricao: "ESTER MONODIGLICERIDEOS AC GRAXO C AC DIACETIL TART(INS472e)", quantidade: 0.122, lote: "AMOSTRA", tipo: "", unidade: "kg" },
+            { codigo: "PQ1426", descricao: "L-VALINA (FEED)", quantidade: 0.142, lote: "3387/24", tipo: "", unidade: "kg" },
+            { codigo: "PQ613", descricao: "CACAU PO VERM. ALCALINO AC 780", quantidade: 0.139, lote: "1453/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ286", descricao: "ACIDO FUMARICO (INS 297) - CWS", quantidade: 0.58, lote: "0542/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ345", descricao: "INOSINATO DISSODICO (INS 631)/ GUANILATO DISSODICO (INS 627)", quantidade: 0.297, lote: "2161/22", tipo: "", unidade: "kg" },
+            { codigo: "PQ047", descricao: "AMIDO MODIFICADO 70", quantidade: 0.484, lote: "1572/2023", tipo: "", unidade: "kg" },
+            { codigo: "PQ249", descricao: "DI-HIDROGENOFOSFATO DE SODIO (INS 339i)", quantidade: 0.247, lote: "4778/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ229", descricao: "DIOXIDO DE TITANIO (INS 171)", quantidade: 0.015, lote: "3441/2024", tipo: "", unidade: "kg" },
+            { codigo: "PQ1761", descricao: "GELATINA (INS 428) - 220 BLOOM MESH 30", quantidade: 0.597, lote: "2368/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ1176", descricao: "GOMA ALFARROBA (INS 410)", quantidade: 0.15, lote: "5582/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ045", descricao: "AMIDO MODIFICADO PRE-GELATINIZADO 80", quantidade: 0.16, lote: "4227/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ1787", descricao: "MALTODEXTRINA -15", quantidade: 0.098, lote: "2306/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ478", descricao: "SUCRALOSE (INS 955)", quantidade: 0.146, lote: "1423/25", tipo: "", unidade: "kg" },
+            { codigo: "AM1468", descricao: "COLAGENO NP", quantidade: 0.189, lote: "AMOSTRA", tipo: "", unidade: "kg" },
+            { codigo: "PQ1181", descricao: "AMIDO ENCAPSULANTE AROMAS", quantidade: 0.825, lote: "AMOSTRA", tipo: "", unidade: "kg" },
+            { codigo: "PQ1217", descricao: "MALTODEXTRINA (MANDIOCA)", quantidade: 0.305, lote: "AMOSTRA", tipo: "", unidade: "kg" },
+            { codigo: "PQ813", descricao: "HIDROXICITRONELAL", quantidade: 0.045, lote: "4044/2024", tipo: "", unidade: "kg" },
+            { codigo: "PQ125", descricao: "CLORETO DE POTASSIO (INS 508)", quantidade: 0.022, lote: "0331/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ1762", descricao: "XAROPE DE GLICOSE", quantidade: 0.104, lote: "4451/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ1886", descricao: "CARBOXIMETILCELULOSE SODICA U 02 (INS466) - UHT", quantidade: 0.258, lote: "1992/2025", tipo: "", unidade: "kg" },
+            { codigo: "MD269", descricao: "FIBRA DE COLAGENO BOVINA", quantidade: 0.183, lote: "03010644/0925", tipo: "", unidade: "kg" },
+            { codigo: "PQ976", descricao: "CASEINATO DE SODIO", quantidade: 0.105, lote: "4924/24", tipo: "", unidade: "kg" },
+            { codigo: "PQ1574", descricao: "CARRAGENA (INS 407) - DC 91-836", quantidade: 0.06, lote: "1436/25", tipo: "", unidade: "kg" },
+            { codigo: "MD3057", descricao: "AROMA ID NATURAL CHOCOLATE - DAR5710", quantidade: 0.05, lote: "AMOSTRA", tipo: "", unidade: "kg" },
+            { codigo: "PQ883", descricao: "DIFOSFATO TETRASSODICO (INS 450iii)", quantidade: 11, lote: "0223/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ1488", descricao: "PROTEINA WPC80 REGULAR", quantidade: 3.65, lote: "0384/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ1257", descricao: "GLUTEN DE TRIGO", quantidade: 2.56, lote: "0003/0825", tipo: "", unidade: "kg" },
+            { codigo: "MD2635", descricao: "CARRAGENA 4064", quantidade: 0.263, lote: "03011998/0925", tipo: "", unidade: "kg" },
+            { codigo: "PQ883", descricao: "DIFOSFATO TETRASSODICO (INS 450iii)", quantidade: 0.141, lote: "0223/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ882", descricao: "POLIFOSFATO / HEXAMETAFOSFATO DE SODIO (INS 452I)", quantidade: 0.538, lote: "4005/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ1761", descricao: "GELATINA (INS 428) - 220 BLOOM MESH 30", quantidade: 1.047, lote: "2368/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ784", descricao: "MALTITOL (INS 965i) - PO", quantidade: 0.48, lote: "2561/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ134", descricao: "PROTEINA WPH 8360.", quantidade: 1.18, lote: "1761/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ1420", descricao: "PROTEINA CONCENTRADA DE LEITE-MPC 70%", quantidade: 2.95, lote: "0030/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ288", descricao: "PROTEINA WPC 8010.", quantidade: 0.186, lote: "4958/24", tipo: "", unidade: "kg" },
+            { codigo: "PQ135", descricao: "CASEINATO DE CALCIO", quantidade: 0.248, lote: "4067/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ269", descricao: "CITRATO DE POTASSIO (INS 332ii)", quantidade: 2.5, lote: "2188/24", tipo: "", unidade: "kg" },
+            { codigo: "PQ135", descricao: "CASEINATO DE CALCIO", quantidade: 1.07, lote: "4352/24", tipo: "", unidade: "kg" },
+            { codigo: "PQ067", descricao: "INGREDIENTE COMPOSTO EM PÓ À BASE DE GORDURA VEGETAL", quantidade: 1.317, lote: "0577/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ786", descricao: "PROTEINA DE ERVILHA 80%", quantidade: 0.783, lote: "0254/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ163", descricao: "SAL REFINADO (SEM IODO)", quantidade: 0.458, lote: "1276/25", tipo: "", unidade: "kg" },
+            { codigo: "PQ1131", descricao: "MONO E DIGLICERIDEOS DE ACIDOS GRAXOS (INS 471)", quantidade: 0.514, lote: "4032/2025", tipo: "", unidade: "kg" },
+            { codigo: "PQ303", descricao: "LEITE EM PO INTEGRAL", quantidade: 0.714, lote: "3256/2025", tipo: "", unidade: "kg" },
+            { codigo: "MD20105", descricao: "CARRAGENA IOTA SEMI REFINADA 200 MESH (INS407A) (PQ244)", quantidade: 0.93, lote: "AMOSTRA", tipo: "", unidade: "kg" }
+        ];
         
         let todosOsProdutos = [];
         let salaAtiva = 'boas-vindas';
@@ -537,26 +599,32 @@
                     return; 
                 }
 
-                const migracaoFeita = todosOsProdutos.some(p => p.codigo === 'DSO1022');
-                // Checa se tem algum item da lista antiga (ex: 5310 com qtd 3.602) E NÃO tem o item marcador novo
-                // A lista antiga tinha '5310' com 3.602. A nova também tem.
-                // A diferença chave é o item 'DSO1022' que só existe na nova lista completa.
-                // Se tem '5310' mas não tem 'DSO1022', é a lista antiga ou incompleta.
-                const temItemAntigo = todosOsProdutos.some(p => p.codigo === '5310');
-
-                if (!migracaoFeita && temItemAntigo) {
+                // Migração de Sorvetes (se não tiver a nova lista)
+                const migracaoSorveteFeita = todosOsProdutos.some(p => p.codigo === 'DSO1022');
+                const temSorveteAntigo = todosOsProdutos.some(p => p.codigo === '5310' && p.quantidade === 3.602);
+                if (!migracaoSorveteFeita && temSorveteAntigo) {
                     console.log("Detectamos lista antiga de sorvetes. Iniciando migração...");
                     loadingSpinner.style.display = 'flex';
                     await migrarParaNovaListaSorvetes(); 
-                    showToast('Estoque de Sorvetes atualizado!', 'bg-green-600');
                     return; 
                 }
-                
-                // Verifica se não tem NENHUM sorvete (caso tenha sido deletado manualmente)
+
+                // Migração de Lácteos (se a lista de lácteos estiver vazia ou antiga)
+                // Verifica se existe algum produto de lácteo. Se não existir (e o banco não estiver vazio), adiciona.
+                const temLacteos = todosOsProdutos.some(p => p.sala === 'lacteos');
+                if (!temLacteos) {
+                    console.log("Lista de lácteos não encontrada. Adicionando...");
+                    loadingSpinner.style.display = 'flex';
+                    await migrarParaNovaListaLacteos();
+                    showToast('Estoque de Lácteos adicionado!', 'bg-green-600');
+                    return;
+                }
+
+                // Verificação de Sorvetes deletados (caso tenha sido limpo)
                 const temSorvete = todosOsProdutos.some(p => p.sala === 'sorvetes');
                 if (!temSorvete && !snapshot.empty) {
                      console.log("Sem sorvetes no banco. Adicionando...");
-                     await migrarParaNovaListaSorvetes(); // Reutiliza a função para adicionar
+                     await migrarParaNovaListaSorvetes(); 
                      return;
                 }
 
@@ -580,32 +648,38 @@
             const batch = writeBatch(db);
             
             const produtosSorvetesAntigos = todosOsProdutos.filter(p => p.sala === 'sorvetes');
-            console.log(`Deletando ${produtosSorvetesAntigos.length} produtos antigos de Sorvetes...`);
             produtosSorvetesAntigos.forEach(item => {
                 const docRef = doc(produtosCollectionRef, item.id);
                 batch.delete(docRef);
             });
             
-            console.log(`Adicionando ${dadosIniciaisSorvetes.length} novos produtos de Sorvetes...`);
             dadosIniciaisSorvetes.forEach(item => {
                 const docRef = doc(produtosCollectionRef); 
                 const nivelAlerta = calcularNivelAlertaPadrao(item.quantidade, item.unidade);
-                
-                batch.set(docRef, {
-                    ...item,
-                    sala: 'sorvetes', 
-                    observacoes: "", 
-                    alerta: nivelAlerta, 
-                });
+                batch.set(docRef, { ...item, sala: 'sorvetes', observacoes: "", alerta: nivelAlerta });
             });
             
-            try {
-                await batch.commit();
-                console.log("Migração de Sorvetes concluída com sucesso!");
-            } catch (error) {
-                console.error("Erro durante a migração de Sorvetes:", error);
-                showToast("Erro ao atualizar dados de Sorvetes.", 'bg-red-600');
-            }
+            try { await batch.commit(); } catch (error) { console.error("Erro migração Sorvetes:", error); }
+        }
+
+        async function migrarParaNovaListaLacteos() {
+            console.log("Iniciando migração dos dados de Lácteos...");
+            const batch = writeBatch(db);
+            
+            // Remove antigos se houver (para garantir limpeza)
+            const produtosLacteosAntigos = todosOsProdutos.filter(p => p.sala === 'lacteos');
+            produtosLacteosAntigos.forEach(item => {
+                const docRef = doc(produtosCollectionRef, item.id);
+                batch.delete(docRef);
+            });
+            
+            dadosIniciaisLacteos.forEach(item => {
+                const docRef = doc(produtosCollectionRef); 
+                const nivelAlerta = calcularNivelAlertaPadrao(item.quantidade, item.unidade);
+                batch.set(docRef, { ...item, sala: 'lacteos', observacoes: "", alerta: nivelAlerta });
+            });
+            
+            try { await batch.commit(); } catch (error) { console.error("Erro migração Lácteos:", error); }
         }
         
         async function popularDadosIniciaisCompletos() {
@@ -622,6 +696,12 @@
                 const docRef = doc(produtosCollectionRef); 
                 const nivelAlerta = calcularNivelAlertaPadrao(item.quantidade, item.unidade);
                 batch.set(docRef, { ...item, sala: 'sorvetes', observacoes: "", alerta: nivelAlerta });
+            });
+
+            dadosIniciaisLacteos.forEach(item => {
+                const docRef = doc(produtosCollectionRef); 
+                const nivelAlerta = calcularNivelAlertaPadrao(item.quantidade, item.unidade);
+                batch.set(docRef, { ...item, sala: 'lacteos', observacoes: "", alerta: nivelAlerta });
             });
             
             try {
@@ -671,7 +751,7 @@
                 (p.codigo && p.codigo.toLowerCase().includes(filtroBusca)) ||
                 (p.descricao && p.descricao.toLowerCase().includes(filtroBusca))
             );
-            produtosFiltrados.sort((a, b) => (a.descricao || '').localeCompare(b.descricao || '')); // Ordena por DESCRIÇÃO conforme pedido
+            produtosFiltrados.sort((a, b) => (a.descricao || '').localeCompare(b.descricao || '')); 
             
             if (produtosFiltrados.length === 0) {
                 noItemsMessage.classList.remove('hidden');
